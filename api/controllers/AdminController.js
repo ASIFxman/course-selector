@@ -44,6 +44,13 @@ module.exports = {
 			}
 		});
 	},
+	logout: function (req, res, next) {
+		req.session.adminAuthenticated = false;
+		req.session.admin = null;
+		req.session.save();
+
+		return res.redirect('/admin/login');
+	},
 	processCreateLogin: function (req, res, next) {
 		var dataToCreate = {
 			studentID: req.param('studentID'),

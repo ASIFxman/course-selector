@@ -73,6 +73,13 @@ module.exports = {
 			});
 		});
 	},
+	logout: function (req, res, next) {
+		req.session.studentAuthenticated = false;
+		req.session.student = null;
+		req.session.save();
+
+		return res.redirect('/student/login');
+	},
 	view: function (req, res, next) {
 		res.view();
 	}
