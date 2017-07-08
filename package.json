@@ -6,6 +6,7 @@
   "keywords": [],
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "connect-redis": "^3.3.0",
     "ejs": "2.3.4",
     "grunt": "1.0.1",
     "grunt-cli": "^1.2.0",
