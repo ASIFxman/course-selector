@@ -1,0 +1,81 @@
+<link rel="stylesheet" href="/studentCSS/login.css" media="screen" title="no title">
+
+<div class="container">
+
+  <header>
+    <h1>Login and Registration Form</h1>
+
+  </header>
+  <section>
+    <div id="container_demo">
+      <a class="hiddenanchor" id="toregister"></a>
+      <a class="hiddenanchor" id="tologin"></a>
+      <div id="wrapper">
+        <div id="login" class="animate form">
+          <form action="/student/processLogin" autocomplete="on">
+            <h1>Log In</h1>
+            <p>
+              <label for="username" class="uname"> Your Student ID </label>
+              <input id="username" name="studentID" required="required" type="text" placeholder="studentID" />
+            </p>
+            <p>
+              <label for="password" class="youpasswd"> Your password </label>
+              <input id="password" name="password" required="required" type="password" placeholder="eg. X8df!90EO" />
+            </p>
+
+            <p class="signin button">
+              <input type="submit" value="Log In" />
+            </p>
+
+            <p class="change_link">
+              Not registered yet ?
+              <a href="#toregister" class="to_register">Click Here to Register</a>
+            </p>
+          </form>
+        </div>
+
+        <div id="register" class="animate form">
+          <form action="/student/processCreate" autocomplete="on">
+            <h1> Register </h1>
+            <p>
+              <label for="usernamesignup" class="uname">Student ID</label>
+              <input id="usernamesignup" name="studentID" required="required" type="text" placeholder="studentID" />
+            </p>
+            <p>
+              <label class="youmail">Your email</label>
+              <input name="email" required="required" type="email" placeholder="mysupermail@mail.com" />
+            </p>
+            <p>
+              <label class="youmail">Your Phone Number</label>
+              <input name="phone" required="required" type="text" placeholder="01711111111" />
+            </p>
+            <p>
+              <label class="youmail">Your First Name</label>
+              <input name="firstName" required="required" type="text" placeholder="First Name" />
+            </p>
+            <p>
+              <label class="youmail">Your Last Name</label>
+              <input name="lastName" required="required" type="text" placeholder="Last Name" />
+            </p>
+            <p>
+              <label for="passwordsignup" class="youpasswd">Your password </label>
+              <input id="passwordsignup" name="password" required="required" type="password" placeholder="eg. X8df!90EO" />
+            </p>
+            <p>
+              <label for="passwordsignup_confirm" class="youpasswd">Please confirm your password </label>
+              <input id="passwordsignup_confirm" name="password_confirm" required="required" type="password" placeholder="eg. X8df!90EO" />
+            </p>
+            <p class="signin button">
+              <input type="submit" value="Sign up" />
+            </p>
+            <p class="change_link">
+              Already registered ?
+              <a href="#tologin" class="to_register"> Click Here to LogIn </a>
+            </p>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</div>
