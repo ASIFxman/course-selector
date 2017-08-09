@@ -17,9 +17,6 @@ module.exports = {
     password: {
       type: 'string'
     },
-    department: {
-      type: 'string'
-    },
     gender: {
       type: 'string',
       enum: ['male','female']
@@ -39,6 +36,23 @@ module.exports = {
     },
     phone: {
       type: 'string'
+    },
+    department: {
+      model: 'Department',
+      via: 'student'
+    },
+    intake: {
+      model: 'Intake',
+      via: 'student'
+    },
+    section: {
+      model: 'Section',
+      via: 'student'
+    },
+    course: {
+      // The Courses Completed
+      collection: 'Course',
+      dominant: true
     }
   },
   beforeCreate: function (values, cb) {
