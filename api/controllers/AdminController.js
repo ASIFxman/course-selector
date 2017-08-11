@@ -8,6 +8,49 @@
 var bcrypt = require('bcryptjs');
 
 module.exports = {
+	'index': function (req, res, next) {
+		return res.redirect('/admin/dashboard');
+	},
+	dashboard: function (req, res, next) {
+		res.view({
+			isAdmin: true
+		});
+	},
+	department: function (req, res, next) {
+		res.view({
+			isAdmin: true
+		});
+	},
+	course: function (req, res, next) {
+		res.view({
+			isAdmin: true
+		});
+	},
+	intake: function (req, res, next) {
+		res.view({
+			isAdmin: true
+		});
+	},
+	section: function (req, res, next) {
+		res.view({
+			isAdmin: true
+		});
+	},
+	routine: function (req, res, next) {
+		res.view({
+			isAdmin: true
+		});
+	},
+	student: function (req, res, next) {
+		res.view({
+			isAdmin: true
+		});
+	},
+	courseCoordinator: function (req, res, next) {
+		res.view({
+			isAdmin: true
+		});
+	},
 	createStudent: function (req, res, next) {
 		res.view();
 	},
@@ -31,7 +74,7 @@ module.exports = {
 						req.session.admin = adminFound;
 						req.session.save();
 
-						return res.redirect('/admin/createStudent');
+						return res.redirect('/admin/dashboard');
 
 					} else {
 						req.session.adminAuthenticated = false;
