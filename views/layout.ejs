@@ -24,6 +24,8 @@
     <% if (typeof isAdmin != 'undefined') { %>
       <!-- Menu CSS -->
       <link href="/adminCSS/sidebar-nav.min.css" rel="stylesheet">
+      <!-- toast CSS -->
+      <link href="/adminCSS/jquery.toast.css" rel="stylesheet">
       <!-- animation CSS -->
       <link href="/adminCSS/animate.css" rel="stylesheet">
       <!-- Custom CSS -->
@@ -55,6 +57,10 @@
       <script src="/adminJS/waves.js"></script>
       <!-- Custom Theme JavaScript -->
       <script src="/adminJS/custom.min.js"></script>
+      <script src="/adminJS/jquery.toast.js"></script>
+      <script src="/adminJS/code.js"></script>
+
+      <%- partial ('admin/partials/notification.ejs') %>
     <% } %>
   </body>
 </html>

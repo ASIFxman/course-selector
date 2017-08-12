@@ -14,10 +14,6 @@ module.exports = {
     description: {
       type: 'text'
     },
-    departmentUUID: {
-      type: 'string',
-      unique: true
-    },
     course: {
       collection: 'Course',
       via: 'department'

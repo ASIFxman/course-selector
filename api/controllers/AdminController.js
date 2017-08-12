@@ -12,43 +12,187 @@ module.exports = {
 		return res.redirect('/admin/dashboard');
 	},
 	dashboard: function (req, res, next) {
-		res.view({
+		return res.view({
 			isAdmin: true
 		});
 	},
 	department: function (req, res, next) {
-		res.view({
-			isAdmin: true
-		});
+		if (typeof req.param("create") != 'undefined') {
+			var dataToCreate = {
+				name: req.param('createDepartmentName'),
+				description: req.param('createDepartmentDescription')
+			};
+			Department.create(dataToCreate).exec(function (err, response) {
+				if (err) {
+					return res.serverError(err);
+				}
+				return res.view({
+					isAdmin: true,
+					notification: true,
+					notificationHeader: 'Success',
+					notificationBody: 'Successfully Created Department'
+				});
+			});
+		} else {
+			return res.view({
+				isAdmin: true
+			});
+		}
 	},
 	course: function (req, res, next) {
-		res.view({
-			isAdmin: true
-		});
+		if (typeof req.param("create") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else if (typeof req.param("manage") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else {
+			return res.view({
+				isAdmin: true
+			});
+		}
 	},
 	intake: function (req, res, next) {
-		res.view({
-			isAdmin: true
-		});
+		if (typeof req.param("create") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else if (typeof req.param("manage") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else {
+			return res.view({
+				isAdmin: true
+			});
+		}
 	},
 	section: function (req, res, next) {
-		res.view({
-			isAdmin: true
-		});
+		if (typeof req.param("create") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else if (typeof req.param("manage") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else {
+			return res.view({
+				isAdmin: true
+			});
+		}
 	},
 	routine: function (req, res, next) {
-		res.view({
-			isAdmin: true
-		});
+		if (typeof req.param("create") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else if (typeof req.param("manage") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else {
+			return res.view({
+				isAdmin: true
+			});
+		}
 	},
 	student: function (req, res, next) {
-		res.view({
-			isAdmin: true
-		});
+		if (typeof req.param("create") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else if (typeof req.param("manage") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else {
+			return res.view({
+				isAdmin: true
+			});
+		}
 	},
 	courseCoordinator: function (req, res, next) {
-		res.view({
-			isAdmin: true
+		if (typeof req.param("create") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else if (typeof req.param("manage") != 'undefined') {
+			return res.view({
+				isAdmin: true
+			});
+		} else {
+			return res.view({
+				isAdmin: true
+			});
+		}
+	},
+	getDepartments: function (req, res, next) {
+		Department.find().exec(function (err, response) {
+			if (err) {
+				return res.json({
+					status: 'error'
+				});
+			} else if (response.length == 0) {
+				return res.json({
+					status: 'empty'
+				});
+			} else {
+				return res.json({
+					status: 'success',
+					response: response
+				});
+			}
+		});
+	},
+	getSingleDepartment: function (req, res, next) {
+		var dataToGet = {
+			id: req.param('id')
+		}
+		Department.findOne(dataToGet).exec(function (err, response) {
+			if (err) {
+				return res.json({
+					status: 'error'
+				});
+			} else if (response.length == 0) {
+				return res.json({
+					status: 'empty'
+				});
+			} else {
+				return res.json({
+					status: 'success',
+					response: response
+				});
+			}
+		});
+	},
+	editDepartment: function (req, res, next) {
+		var dataToFind = {
+			id: req.param('recordId')
+		};
+		var dataToUpdate = {
+			name: req.param('manageDepartmentName'),
+			description: req.param('manageDepartmentDescription')
+		}
+		Department.update(dataToFind, dataToUpdate).exec(function (err) {
+			if (err) {
+				return res.serverError(err);
+			}
+			return res.redirect('/admin/department');
+		});
+	},
+	deleteDepartment: function (req, res, next) {
+		var dataToDelete = {
+			id: req.param('id')
+		}
+
+		Department.destroy(dataToDelete).exec(function (err) {
+			if (err) {
+				return res.serverError(err);
+			}
+			return res.redirect('/admin/department')
 		});
 	},
 	createStudent: function (req, res, next) {
