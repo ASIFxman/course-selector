@@ -7,6 +7,14 @@
 
 var bcrypt = require('bcryptjs');
 
+function checkAddArray(data) {
+	if (Array.isArray(data)) {
+		return data;
+	} else {
+		return [data];
+	}
+}
+
 module.exports = {
 	'index': function (req, res, next) {
 		return res.redirect('/admin/dashboard');
@@ -40,19 +48,105 @@ module.exports = {
 		}
 	},
 	course: function (req, res, next) {
-		if (typeof req.param("create") != 'undefined') {
-			return res.view({
-				isAdmin: true
-			});
-		} else if (typeof req.param("manage") != 'undefined') {
-			return res.view({
-				isAdmin: true
-			});
-		} else {
-			return res.view({
-				isAdmin: true
-			});
-		}
+			if (typeof req.param("create") != 'undefined') {
+				// console.log(req.param('preCourse'));
+				var dataToCreate = {
+					name: req.param('name'),
+					description: req.param('description'),
+					department: req.param('department'),
+					preCourse: typeof req.param('preCourse') != 'undefined' ? checkAddArray(req.param('preCourse')) : null,
+					credit: req.param('credit')
+				}
+				// console.log(JSON.stringify(dataToCreate));
+				Course.create(dataToCreate).exec(function (err) {
+					if (err) {
+						return res.serverError(err);
+					}
+					Department.find()
+					.populate('course')
+					.exec(function (err, response) {
+						if (err) {
+							return res.serverError(err);
+						}
+						return res.view({
+							isAdmin: true,
+							department: response,
+							notification: true,
+							notificationHeader: 'Success',
+							notificationBody: 'Successfully Created Course'
+						});
+					});
+				});
+			} else if (typeof req.param("manage") != 'undefined') {
+				var action = req.param("manage");
+
+				if (action === 'Delete') {
+					Course.destroy({
+						id: req.param('editCourse')
+					}).exec(function (err) {
+						if (err) {
+							return res.serverError(err);
+						}
+						Department.find()
+						.populate('course')
+						.exec(function (err, response) {
+							if (err) {
+								return res.serverError(err);
+							}
+							return res.view({
+								isAdmin: true,
+								department: response,
+								notification: true,
+								notificationHeader: 'Success',
+								notificationBody: 'Successfully Deleted Course'
+							});
+						});
+					});
+				} else {
+					var dataToFind = {
+						id: req.param('editCourse')
+					}
+					var dataToUpdate = {
+						name: req.param('editName'),
+						description: req.param('editDescription'),
+						preCourse: typeof req.param('editPreCourse') != 'undefined' ? checkAddArray(req.param('editPreCourse')) : [],
+						credit: req.param('editCredit')
+					}
+					console.log(dataToUpdate);
+					Course.update(dataToFind, dataToUpdate)
+					.exec(function (err) {
+						if (err) {
+							return res.serverError(err);
+						}
+						Department.find()
+						.populate('course')
+						.exec(function (err, response) {
+							if (err) {
+								return res.serverError(err);
+							}
+							return res.view({
+								isAdmin: true,
+								department: response,
+								notification: true,
+								notificationHeader: 'Success',
+								notificationBody: 'Successfully Edited Course'
+							});
+						});
+					});
+				}
+			} else {
+				Department.find()
+				.populate('course')
+				.exec(function (err, response) {
+					if (err) {
+						return res.serverError(err);
+					}
+					return res.view({
+						isAdmin: true,
+						department: response
+					});
+				});
+			}
 	},
 	intake: function (req, res, next) {
 		if (typeof req.param("create") != 'undefined') {
@@ -195,9 +289,39 @@ module.exports = {
 			return res.redirect('/admin/department')
 		});
 	},
-	createStudent: function (req, res, next) {
-		res.view();
+	getCourses: function (req, res, next) {
+		var searchParam = {};
+		if (typeof req.param('departmentId') != 'undefined') {
+			searchParam = {
+				department: req.param('departmentId')
+			}
+		} else if (typeof req.param('courseId') != 'undefined') {
+			searchParam = {
+				id: req.param('courseId')
+			}
+		}
+		Course.find(searchParam)
+		.populate('preCourse')
+		.exec(function (err, response) {
+			if (err) {
+				return res.json({
+					status: 'error'
+				});
+			} else if (response.length === 0) {
+				return res.json({
+					status: 'empty'
+				});
+			} else {
+				return res.json({
+					status: 'success',
+					courses: response
+				});
+			}
+		})
 	},
+	// createStudent: function (req, res, next) {
+	// 	res.view();
+	// },
 	processLogin: function (req, res, next) {
 		var password = req.param('password');
 

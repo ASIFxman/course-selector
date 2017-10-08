@@ -69,19 +69,58 @@
     <!-- Create Modal -->
     <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
-        <form class="form" action="" method="post">
+        <form class="form" action="" method="get">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title">Create</h4>
             </div>
+            <% if (department.length > 0) { %>
             <div class="modal-body">
-              ...
+              <div class="form-group">
+                <label>Select Department</label>
+                <select class="form-control form-control-line" name="department">
+                  <% _.each(department, function (eachDepartment) { %>
+                    <option value="<%= eachDepartment.id %>"><%= eachDepartment.name %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Select Pre Course(s)</label>
+                <div id="preCourseContainer">
+                  <% if (department[0].course.length === 0) { %>
+                    <p>No Courses in Database!</p>
+                  <% } else { %>
+                    <select class="form-control form-control-line" name="preCourse" multiple>
+                    <% _.each(department[0].course, function (eachDepartmentCourse) { %>
+                      <option value="<%= eachDepartmentCourse.id %>"><%= eachDepartmentCourse.name %></option>
+                    <% }) %>
+                    </select>
+                  <% } %>
+                </div>
+              </div>
+              <div class="form-group">
+                  <label>Course Name</label>
+                  <input name="name" type="text" placeholder="Eg. Math 101" class="form-control form-control-line">
+              </div>
+              <div class="form-group">
+                  <label>Course Description</label>
+                  <textarea name="description" rows="5" class="form-control form-control-line" placeholder="Eg. About Course"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Course Credit</label>
+                <input name="credit" class="form-control form-control-line" type="number" step="0.01" value="0.00">
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               <button type="submit" class="btn btn-primary" name="create">Submit</button>
             </div>
+            <% } else { %>
+              <div class="modal-body">
+                <a href="/admin/department">Create a Department First!</a>
+              </div>
+            <% } %>
           </div>
         </form>
       </div>
@@ -96,14 +135,79 @@
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title">Manage</h4>
             </div>
+            <% if (department.length > 0) { %>
             <div class="modal-body">
-              ...
+              <div class="form-group">
+                <label>Select Department</label>
+                <select class="form-control form-control-line" name="editCourseDepartment">
+                  <% _.each(department, function (eachDepartment) { %>
+                    <option value="<%= eachDepartment.id %>"><%= eachDepartment.name %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Select Course to Edit</label>
+                <div id="courseToEditContainer">
+                  <% if (department[0].course.length === 0) { %>
+                    <p>No Courses in Database!</p>
+                  <% } else { %>
+                    <select class="form-control form-control-line" name="editCourse">
+                    <% _.each(department[0].course, function (eachDepartmentCourse) { %>
+                      <option value="<%= eachDepartmentCourse.id %>"><%= eachDepartmentCourse.name %></option>
+                    <% }) %>
+                    </select>
+                  <% } %>
+                </div>
+              </div>
+              <div id="courseEditFieldsContainer">
+                <% if (department[0].course.length !== 0) { %>
+                  <div class="form-group">
+                    <label>Select Pre Course(s)</label>
+                    <select class="form-control form-control-line" name="editPreCourse" multiple>
+                    <% _.each(department[0].course, function (eachDepartmentCourse) { %>
+                      <option value="<%= eachDepartmentCourse.id %>"><%= eachDepartmentCourse.name %></option>
+                    <% }) %>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                      <label>Course Name</label>
+                      <input name="editName" type="text" value="<%= department[0].course[0].name %>" class="form-control form-control-line">
+                  </div>
+                  <div class="form-group">
+                      <label>Course Description</label>
+                      <textarea name="editDescription" rows="5" class="form-control form-control-line"><%= department[0].course[0].description %></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>Course Credit</label>
+                    <input name="editCredit" class="form-control form-control-line" type="number" step="0.01" value="<%= department[0].course[0].credit %>">
+                  </div>
+                <% } %>
+              </div>
+              <div id="courseEditButtonContainer">
+                <% if (department[0].course.length !== 0) { %>
+                  <input type="submit" class="btn btn-primary" name="manage" value="Save Changes">
+                  <input type="submit" class="btn btn-danger" name="manage" value="Delete">
+                <% } %>
+              </div>
             </div>
+            <% } else { %>
+              <div class="modal-body">
+                <a href="/admin/department">Create a Department First!</a>
+              </div>
+            <% } %>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              
+
             </div>
           </div>
         </form>
       </div>
     </div>
+
+    <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+      $.get('/admin/getCourses',{
+        courseId: $("[name=editCourse]").val()
+      }, changePreCourse);
+    });
+    </script>

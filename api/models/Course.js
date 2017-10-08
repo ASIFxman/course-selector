@@ -8,6 +8,12 @@
 module.exports = {
 
   attributes: {
+    name: {
+      type: 'string'
+    },
+    description: {
+      type: 'text'
+    },
     department: {
       model: 'Department',
       via: 'course'

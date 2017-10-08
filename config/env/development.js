@@ -29,7 +29,7 @@ module.exports = {
 
   models: {
     connection: 'localMySQLServer',
-    migrate: 'alter'
+    migrate: 'safe'
   }
 
 };
