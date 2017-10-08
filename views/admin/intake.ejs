@@ -75,13 +75,34 @@
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title">Create</h4>
             </div>
+            <% if (department.length > 0) { %>
             <div class="modal-body">
-              ...
+              <div class="form-group">
+                <label>Select Department</label>
+                <select class="form-control form-control-line" name="department">
+                  <% _.each(department, function (eachDepartment) { %>
+                    <option value="<%= eachDepartment.id %>"><%= eachDepartment.name %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="form-group">
+                  <label>Intake Name</label>
+                  <input name="name" type="text" placeholder="Eg. 25" class="form-control form-control-line">
+              </div>
+              <div class="form-group">
+                  <label>Intake Description</label>
+                  <textarea name="description" rows="5" class="form-control form-control-line" placeholder="Eg. About Intake"></textarea>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               <button type="submit" class="btn btn-primary" name="create">Submit</button>
             </div>
+            <% } else { %>
+              <div class="modal-body">
+                <a href="/admin/department">Create a Department First!</a>
+              </div>
+            <% } %>
           </div>
         </form>
       </div>
@@ -96,13 +117,48 @@
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               <h4 class="modal-title">Manage</h4>
             </div>
+            <% if (department.length > 0) { %>
             <div class="modal-body">
-              ...
+              <div class="form-group">
+                <label>Select Department</label>
+                <select class="form-control form-control-line" name="editIntakeDepartment">
+                  <% _.each(department, function (eachDepartment) { %>
+                    <option value="<%= eachDepartment.id %>"><%= eachDepartment.name %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div id="intakeEditContainer">
+                <% if (department[0].intake.length > 0) { %>
+                <div class="form-group">
+                  <label>Select Intake</label>
+                  <select class="form-control form-control-line" name="editIntake">
+                    <% _.each(department[0].intake, function (eachIntake) { %>
+                      <option value="<%= eachIntake.id %>"><%= eachIntake.name %></option>
+                    <% }) %>
+                  </select>
+                </div>
+                <div class="form-group">
+                    <label>Intake Name</label>
+                    <input name="editIntakeName" type="text" placeholder="Eg. 25" class="form-control form-control-line" value="<%= department[0].intake[0].name %>">
+                </div>
+                <div class="form-group">
+                    <label>Intake Description</label>
+                    <textarea name="editIntakeDescription" rows="5" class="form-control form-control-line" placeholder="Eg. About Intake"><%= department[0].intake[0].description %></textarea>
+                </div>
+                <% } else { %>
+                  <p>No Intakes In This Department!</p>
+                <% } %>
+              </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              
+            <div id="editIntakeFooter" class="modal-footer">
+              <input type="submit" class="btn btn-primary" name="manage" value="Save Changes">
+              <input type="submit" class="btn btn-danger" name="manage" value="Delete">
             </div>
+            <% } else { %>
+              <div class="modal-body">
+                <a href="/admin/department">Create a Department First!</a>
+              </div>
+            <% } %>
           </div>
         </form>
       </div>

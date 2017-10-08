@@ -86,6 +86,52 @@ $(document).ready(function () {
       });
     });
   });
+  $("[name=editIntake]").on('input', function () {
+    $.get('/admin/getIntake',{
+      intakeId: $("[name=editIntake]").val()
+    }, changeEditIntake);
+  });
+  $("[name=editIntakeDepartment]").on('input', function () {
+    $.get("/admin/getIntake",{
+      departmentId: $("[name=editIntakeDepartment]").val()
+    }, function (data) {
+      var dataToWrite = "";
+      var footerToWrite = '<input type="submit" class="btn btn-primary" name="manage" value="Save Changes">';
+      footerToWrite += '<input type="submit" class="btn btn-danger" name="manage" value="Delete">';
+      if (data.status === 'success') {
+        dataToWrite += '<div class="form-group">';
+          dataToWrite += '<label>Select Intake</label>';
+          dataToWrite += '<select class="form-control form-control-line" name="editIntake">'
+            for (var i = 0; i < data.intake.length; i++) {
+              data.intake[i]
+              dataToWrite += '<option value="' + data.intake[i].id + '">' + data.intake[i].name + '</option>';
+            }
+          dataToWrite += '</select>';
+        dataToWrite += '</div>';
+        dataToWrite += '<div class="form-group">';
+            dataToWrite += '<label>Intake Name</label>';
+            dataToWrite += '<input name="editIntakeName" type="text" placeholder="Eg. 25" class="form-control form-control-line" value="' + data.intake[0].name + '">';
+        dataToWrite += '</div>';
+        dataToWrite += '<div class="form-group">';
+            dataToWrite += '<label>Intake Description</label>';
+            dataToWrite += '<textarea name="editIntakeDescription" rows="5" class="form-control form-control-line" placeholder="Eg. About Intake">' + data.intake[0].description + '</textarea>'
+        dataToWrite += '</div>';
+      } else if (data.status === 'empty') {
+        dataToWrite += '<p>No Intakes In This Department!</p>';
+        footerToWrite = '';
+      } else if (data.status === 'error') {
+        dataToWrite += '<p>Database Error!</p>';
+        footerToWrite = '';
+      }
+      $("#intakeEditContainer").html(dataToWrite);
+      $("#editIntakeFooter").html(footerToWrite);
+      $("[name=editIntake]").on('input', function () {
+        $.get('/admin/getIntake',{
+          intakeId: $("[name=editIntake]").val()
+        }, changeEditIntake);
+      });
+    });
+  })
 });
 
 function changePreCourse(data) {
@@ -121,6 +167,19 @@ function changePreCourse(data) {
     });
   }
   // $("#preCourseContainer").html(dataToWrite);
+}
+
+function changeEditIntake(data) {
+  if (data.status === 'success') {
+    $("[name=editIntakeName]").val(data.intake[0].name);
+    $("[name=editIntakeDescription]").html(data.intake[0].description);
+  } else if (data.status === 'empty') {
+    $("[name=editIntakeName]").val('ERROR!!');
+    $("[name=editIntakeDescription]").html('ERROR!!');
+  } else if (data.status === 'error') {
+    $("[name=editIntakeName]").val('ERROR!!');
+    $("[name=editIntakeDescription]").html('ERROR!!');
+  }
 }
 
 function getDepartmentForEdit() {

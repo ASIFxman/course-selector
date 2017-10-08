@@ -112,7 +112,6 @@ module.exports = {
 						preCourse: typeof req.param('editPreCourse') != 'undefined' ? checkAddArray(req.param('editPreCourse')) : [],
 						credit: req.param('editCredit')
 					}
-					console.log(dataToUpdate);
 					Course.update(dataToFind, dataToUpdate)
 					.exec(function (err) {
 						if (err) {
@@ -150,16 +149,95 @@ module.exports = {
 	},
 	intake: function (req, res, next) {
 		if (typeof req.param("create") != 'undefined') {
-			return res.view({
-				isAdmin: true
+			var dataToWrite = {
+				name: req.param('name'),
+				description: req.param('description'),
+				department: req.param('department')
+			}
+			Intake.create(dataToWrite).exec(function (err) {
+				if (err) {
+					return res.serverError(err);
+				}
+				Department.find()
+				.populate('intake')
+				.exec(function (err, response) {
+					if (err) {
+						return res.serverError(err);
+					}
+					return res.view({
+						isAdmin: true,
+						department: response,
+						notification: true,
+						notificationHeader: 'Success',
+						notificationBody: 'Successfully Created Intake'
+					});
+				});
 			});
 		} else if (typeof req.param("manage") != 'undefined') {
-			return res.view({
-				isAdmin: true
-			});
+			var action = req.param("manage");
+
+			if (action === 'Delete') {
+				Intake.destroy({
+					id: req.param('editIntake')
+				}).exec(function (err) {
+					if (err) {
+						return res.serverError(err);
+					}
+					Department.find()
+					.populate('intake')
+					.exec(function (err, response) {
+						if (err) {
+							return res.serverError(err);
+						}
+						return res.view({
+							isAdmin: true,
+							department: response,
+							notification: true,
+							notificationHeader: 'Success',
+							notificationBody: 'Successfully Deleted Intake'
+						});
+					});
+				});
+			} else {
+				var dataToFind = {
+					id: req.param('editIntake')
+				}
+				var dataToUpdate = {
+					name: req.param('editIntakeName'),
+					description: req.param('editIntakeDescription')
+				}
+				Intake.update(dataToFind, dataToUpdate)
+				.exec(function (err) {
+					if (err) {
+						return res.serverError(err);
+					}
+					Department.find()
+					.populate('intake')
+					.exec(function (err, response) {
+						if (err) {
+							return res.serverError(err);
+						}
+						return res.view({
+							isAdmin: true,
+							department: response,
+							notification: true,
+							notificationHeader: 'Success',
+							notificationBody: 'Successfully Edited Intake'
+						});
+					});
+				});
+			}
 		} else {
-			return res.view({
-				isAdmin: true
+			Department.find()
+			.populate('intake')
+			.exec(function (err, response) {
+				if (err) {
+					return res.serverError(err);
+				}
+				return res.view({
+					isAdmin: true,
+					department: response
+				});
 			});
 		}
 	},
@@ -315,6 +393,35 @@ module.exports = {
 				return res.json({
 					status: 'success',
 					courses: response
+				});
+			}
+		})
+	},
+	getIntake: function (req, res, next) {
+		var searchParam = {};
+		if (typeof req.param('departmentId') != 'undefined') {
+			searchParam = {
+				department: req.param('departmentId')
+			}
+		} else if (typeof req.param('intakeId') != 'undefined') {
+			searchParam = {
+				id: req.param('intakeId')
+			}
+		}
+		Intake.find(searchParam)
+		.exec(function (err, response) {
+			if (err) {
+				return res.json({
+					status: 'error'
+				});
+			} else if (response.length === 0) {
+				return res.json({
+					status: 'empty'
+				});
+			} else {
+				return res.json({
+					status: 'success',
+					intake: response
 				});
 			}
 		})
