@@ -243,16 +243,68 @@ module.exports = {
 	},
 	section: function (req, res, next) {
 		if (typeof req.param("create") != 'undefined') {
-			return res.view({
-				isAdmin: true
+			var dataToCreate = {
+				name: req.param('sectionName'),
+				intake: req.param('editSectionIntake')
+			}
+			Section.create(dataToCreate)
+			.exec(function (err) {
+				if (err) {
+					return res.serverError(err);
+				}
+				Department.find()
+				.populate('intake')
+				.exec(function (err, response) {
+					if (err) {
+						return res.serverError(err);
+					}
+					return res.view({
+						isAdmin: true,
+						department: response,
+						notification: true,
+						notificationHeader: 'Success',
+						notificationBody: 'Successfully Created Section'
+					});
+				});
 			});
+
 		} else if (typeof req.param("manage") != 'undefined') {
-			return res.view({
-				isAdmin: true
-			});
+			var action = req.param("manage");
+
+			if (action === 'Delete') {
+				Section.destroy({
+					id: req.param('editSectionSelect')
+				}).exec(function (err) {
+					if (err) {
+						return res.serverError(err);
+					}
+					Department.find()
+					.populate('intake')
+					.exec(function (err, response) {
+						if (err) {
+							return res.serverError(err);
+						}
+						return res.view({
+							isAdmin: true,
+							department: response,
+							notification: true,
+							notificationHeader: 'Success',
+							notificationBody: 'Successfully Deleted Section'
+						});
+					});
+				});
+			}
 		} else {
-			return res.view({
-				isAdmin: true
+			Department.find()
+			.populate('intake')
+			.exec(function (err, response) {
+				if (err) {
+					return res.serverError(err);
+				}
+				return res.view({
+					isAdmin: true,
+					department: response
+				});
 			});
 		}
 	},
@@ -273,20 +325,49 @@ module.exports = {
 	},
 	student: function (req, res, next) {
 		if (typeof req.param("create") != 'undefined') {
-			return res.view({
-				isAdmin: true
+			var dataToCreate = {
+				studentID: req.param('studentID'),
+				department: req.param('department'),
+				intake: req.param('intake'),
+				gender: req.param('gender'),
+				password: ''
+			};
+
+			Student.create(dataToCreate).exec(function (err) {
+				if (err) {
+					return res.serverError(err);
+				}
+				Student.find()
+				.exec(function (err, response) {
+					return res.view({
+						isAdmin: true,
+						student: response,
+						notification: true,
+						notificationHeader: 'Success',
+						notificationBody: 'Successfully Created Student'
+					});
+				});
 			});
+
 		} else if (typeof req.param("manage") != 'undefined') {
-			return res.view({
-				isAdmin: true
+			Student.find()
+			.exec(function (err, response) {
+				return res.view({
+					isAdmin: true,
+					student: response
+				});
 			});
 		} else {
-			return res.view({
-				isAdmin: true
+			Student.find()
+			.exec(function (err, response) {
+				return res.view({
+					isAdmin: true,
+					student: response
+				});
 			});
 		}
 	},
-	courseCoordinator: function (req, res, next) {
+	registration: function (req, res, next) {
 		if (typeof req.param("create") != 'undefined') {
 			return res.view({
 				isAdmin: true
@@ -429,6 +510,35 @@ module.exports = {
 	// createStudent: function (req, res, next) {
 	// 	res.view();
 	// },
+	getSection: function (req, res, next) {
+		var searchParam = {};
+		if (typeof req.param('intakeId') != 'undefined') {
+			searchParam = {
+				intake: req.param('intakeId')
+			}
+		} else if (typeof req.param('sectionId') != 'undefined') {
+			searchParam = {
+				id: req.param('sectionId')
+			}
+		}
+		Section.find(searchParam)
+		.exec(function (err, response) {
+			if (err) {
+				return res.json({
+					status: 'error'
+				});
+			} else if (response.length === 0) {
+				return res.json({
+					status: 'empty'
+				});
+			} else {
+				return res.json({
+					status: 'success',
+					section: response
+				});
+			}
+		})
+	},
 	processLogin: function (req, res, next) {
 		var password = req.param('password');
 
@@ -469,19 +579,4 @@ module.exports = {
 
 		return res.redirect('/admin/login');
 	},
-	processCreateLogin: function (req, res, next) {
-		var dataToCreate = {
-			studentID: req.param('studentID'),
-			department: req.param('department'),
-			gender: req.param('gender'),
-			password: ''
-		};
-
-		Student.create(dataToCreate).exec(function (err) {
-			if (err) {
-				return res.serverError(err);
-			}
-			return res.redirect('/admin/createStudent');
-		});
-	}
 };

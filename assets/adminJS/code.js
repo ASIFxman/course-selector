@@ -132,6 +132,77 @@ $(document).ready(function () {
       });
     });
   })
+  $("[name=editSectionIntakeDepartment]").on('input', function () {
+    $.get('/admin/getIntake', {
+      departmentId: $("[name=editSectionIntakeDepartment]").val()
+    }, function (data) {
+      var dataToWrite = "";
+
+      if (data.status === 'success') {
+        dataToWrite += '<div class="form-group">';
+          dataToWrite += '<label>Select Intake</label>';
+          dataToWrite += '<select class="form-control form-control-line" name="editSectionIntake">';
+          for (var i = 0; i < data.intake.length; i++) {
+            dataToWrite += '<option value="' + data.intake[i].id + '">' + data.intake[i].name + '</option>';
+          }
+          dataToWrite += '</select>';
+        dataToWrite += '</div>';
+        dataToWrite += '<div class="form-group">';
+          dataToWrite += '<label>Section Name</label>';
+          dataToWrite += '<input class="form-control form-control-line" type="text" name="sectionName" placeholder="Eg. Section 1">';
+        dataToWrite += '</div>';
+      } else if (data.status === 'empty') {
+        dataToWrite += '<p>No Intakes In This Department!</p>';
+      } else if (data.status === 'error') {
+        dataToWrite += '<p>No Intakes In This Department!</p>';
+      }
+
+      $("[name=editSectionIntake]").html(dataToWrite);
+    });
+  });
+  $("[name=editEditSectionIntakeDepartment]").on('input', function () {
+    $.get('/admin/getIntake', {
+      departmentId: $("[name=editEditSectionIntakeDepartment]").val()
+    }, function (data) {
+      var dataToWrite = "";
+
+      if (data.status === 'success') {
+        dataToWrite += '<div class="form-group">';
+          dataToWrite += '<label>Select Intake</label>';
+          dataToWrite += '<select class="form-control form-control-line" name="editEditSectionIntake">';
+          for (var i = 0; i < data.intake.length; i++) {
+            dataToWrite += '<option value="' + data.intake[i].id + '">' + data.intake[i].name + '</option>';
+          }
+          dataToWrite += '</select>';
+        dataToWrite += '</div>';
+        dataToWrite += '<div id="editSectionSelectContainer">';
+        dataToWrite += '</div>';
+
+        $("#sectionIntakeEditEditContainer").html(dataToWrite);
+        $.get('/admin/getSection', {
+          intakeId: $("[name=editEditSectionIntake]").val()
+        }, changeSection);
+
+        $("[name=editEditSectionIntake]").on('input', function () {
+          $.get('/admin/getSection', {
+            intakeId: $("[name=editEditSectionIntake]").val()
+          }, changeSection);
+        })
+      } else if (data.status === 'empty') {
+        dataToWrite = '<p>No Intakes In This Department!</p>';
+        $("#sectionIntakeEditEditContainer").html(dataToWrite);
+      } else if (data.status === 'error') {
+        dataToWrite = '<p>No Intakes In This Department!</p>';
+        $("#sectionIntakeEditEditContainer").html(dataToWrite);
+      }
+
+    });
+  });
+  $("[name=editEditSectionIntake]").on('input', function () {
+    $.get('/admin/getSection', {
+      intakeId: $("[name=editEditSectionIntake]").val()
+    }, changeSection);
+  })
 });
 
 function changePreCourse(data) {
@@ -259,4 +330,20 @@ function selectEdit(departmentId) {
 
     $("#manageDepartmentBody").html(dataToWrite);
   });
+}
+
+function changeSection(data) {
+  if (data.status === 'success') {
+    var dataToWrite = '';
+    dataToWrite += '<div class="form-group">';
+      dataToWrite += '<label>Select Section</label>';
+      dataToWrite += '<select name="editSectionSelect" class="form-control form-control-line">';
+      for (var i = 0; i < data.section.length; i++) {
+        dataToWrite += '<option value="' + data.section[i].id + '">' + data.section[i].name + '</option>';
+      }
+      dataToWrite += '</select>';
+    dataToWrite += '</div>';
+
+    $("#editSectionSelectContainer").html(dataToWrite);
+  }
 }

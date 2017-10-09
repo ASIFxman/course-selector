@@ -8,6 +8,9 @@
 module.exports = {
 
   attributes: {
+    name: {
+      type: 'string'
+    },
     intake: {
       model: 'Intake',
       via: 'section'

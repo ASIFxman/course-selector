@@ -76,7 +76,31 @@
               <h4 class="modal-title">Create</h4>
             </div>
             <div class="modal-body">
-              ...
+              <div class="form-group">
+    						<label>Student ID</label>
+    						<input type="text" class="form-control form-control-line" name="studentID" placeholder="Student ID">
+    					</div>
+
+              <div id="departmentContainer">
+                <div class="form-group">
+      						<label>Department</label>
+      						<input type="text" class="form-control form-control-line" name="department" placeholder="Department">
+      					</div>
+              </div>
+              <div id="intakeContainer">
+                <div class="form-group">
+      						<label>Intake</label>
+      						<input type="text" class="form-control form-control-line" name="intake" placeholder="Department">
+      					</div>
+              </div>
+
+    					<div class="form-group">
+    						<input type="radio" class="" name="gender" id="male" placeholder="username" value="male">
+    						<label for="male">Male</label>
+
+    						<input type="radio" class="" name="gender" id="female" placeholder="username" value="female">
+    						<label for="female">Female</label>
+    					</div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -97,13 +121,27 @@
               <h4 class="modal-title">Manage</h4>
             </div>
             <div class="modal-body">
-              ...
+              <div class="form-group">
+                <select class="form-control form-control-line" name="studentSelect">
+                  <% _.each(student, function (eachStudent) { %>
+                    <option value="<%= eachStudent.id %>"><%= eachStudent.studentID %></option>
+                  <% }) %>
+                </select>
+              </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              
+              <input type="submit" class="btn btn-danger" name="manage" value="Delete">
             </div>
           </div>
         </form>
       </div>
     </div>
+
+    <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+      $.get('/admin/getDepartments',{
+        courseId: $("[name=editCourse]").val()
+      }, changePreCourse);
+    });
+    </script>
