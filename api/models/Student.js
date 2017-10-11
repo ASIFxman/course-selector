@@ -45,10 +45,6 @@ module.exports = {
       model: 'Intake',
       via: 'student'
     },
-    section: {
-      model: 'Section',
-      via: 'student'
-    },
     course: {
       // The Courses Completed
       collection: 'Course',

@@ -16,6 +16,10 @@ module.exports = {
     },
     password: {
       type: 'string'
+    },
+    userType: {
+      type: 'string',
+      enum: ['admin','teacher']
     }
   },
   beforeCreate: function (values, cb) {

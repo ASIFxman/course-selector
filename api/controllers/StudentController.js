@@ -16,8 +16,8 @@ module.exports = {
 		}).exec(function (err, response) {
 			if (err) {
 				return res.serverError(err);
-			} else if (response === undefined) {
-				return res.forbidden();
+			} else if (typeof response === 'undefined') {
+				return res.redirect('/student/login');
 			} else if (response.firstRecord) {
 				return res.redirect('/student/login#toregister');
 			} else {
@@ -58,7 +58,7 @@ module.exports = {
 		Student.findOne(dataToCheck).exec(function (err, response) {
 			if (err) {
 				return res.serverError(err);
-			} else if (!response.firstRecord) {
+			} else if (typeof response === 'undefined' || !response.firstRecord) {
 				return res.forbidden();
 			}
 			var recordId = {

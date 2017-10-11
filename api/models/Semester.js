@@ -8,7 +8,33 @@
 module.exports = {
 
   attributes: {
-
+    name: {
+      type: 'string'
+    },
+    current: {
+      type: 'boolean',
+      defaultsTo: true
+    },
+    routine: {
+      type: 'json'
+    }
+    /*
+      {
+        departmentId: [
+          intakeId: [
+            {
+              sectionId,
+              dayName: [
+                {
+                  courseId,
+                  start,
+                  end
+                }
+              ]
+            }
+          ]
+        ]
+      }
+    */
   }
 };
-

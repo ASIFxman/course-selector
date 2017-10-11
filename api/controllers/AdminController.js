@@ -309,19 +309,50 @@ module.exports = {
 		}
 	},
 	routine: function (req, res, next) {
-		if (typeof req.param("create") != 'undefined') {
-			return res.view({
-				isAdmin: true
+		Department.find()
+		.populate('intake')
+		.exec(function (err, response) {
+			if (err) {
+				return res.serverError(err);
+			}
+			var mainData = response;
+
+			NestedPopulateService.populateDeep('department', response, 'intake.section', function (err, dataToSend) {
+				if (err) {
+					return res.serverError(err);
+				}
+
+				if (typeof req.param("create") != 'undefined') {
+					return res.view({
+						isAdmin: true,
+						data: dataToSend,
+						days: [
+							'Sunday',
+							'Monday',
+							'Twesday',
+							'Wednesday',
+							'Thursday',
+							'Friday',
+							'Saturday'
+						]
+					});
+				} else {
+					return res.view({
+						isAdmin: true,
+						data: dataToSend,
+						days: [
+							'Sunday',
+							'Monday',
+							'Twesday',
+							'Wednesday',
+							'Thursday',
+							'Friday',
+							'Saturday'
+						]
+					});
+				}
 			});
-		} else if (typeof req.param("manage") != 'undefined') {
-			return res.view({
-				isAdmin: true
-			});
-		} else {
-			return res.view({
-				isAdmin: true
-			});
-		}
+		});
 	},
 	student: function (req, res, next) {
 		if (typeof req.param("create") != 'undefined') {
@@ -350,16 +381,33 @@ module.exports = {
 			});
 
 		} else if (typeof req.param("manage") != 'undefined') {
-			Student.find()
-			.exec(function (err, response) {
-				return res.view({
-					isAdmin: true,
-					student: response
+			var dataToDelete = {
+				id: req.param('studentSelect')
+			}
+			Student.destroy(dataToDelete).exec(function (err) {
+				if (err) {
+					return res.serverError(err);
+				}
+				Student.find()
+				.exec(function (err, response) {
+					if (err) {
+						return res.serverError(err);
+					}
+					return res.view({
+						isAdmin: true,
+						student: response,
+						notification: true,
+						notificationHeader: 'Success',
+						notificationBody: 'Successfully Deleted Student'
+					});
 				});
-			});
+			})
 		} else {
 			Student.find()
 			.exec(function (err, response) {
+				if (err) {
+					return res.serverError(err);
+				}
 				return res.view({
 					isAdmin: true,
 					student: response

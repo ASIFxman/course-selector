@@ -203,6 +203,35 @@ $(document).ready(function () {
       intakeId: $("[name=editEditSectionIntake]").val()
     }, changeSection);
   })
+  $(".addRow").click(function () {
+    var nameAppend = $(this).attr('data-name');
+    var rowSelector = $(this).parent().prev().children();
+    var rowNumber = parseInt($(this).children().val()) + 1;
+    var rowNumberSelector = $(this).children();
+    $.get('/admin/getCourses', {}, function (data) {
+      if (data.status === 'success') {
+        var dataToWrite = "";
+        dataToWrite += '<tr>';
+          dataToWrite += '<td>';
+            dataToWrite += '<select class="selectCourses form-control form-control-line" name="' + nameAppend + 'Row' + rowNumber + 'Course">';
+        for (var i = 0; i < data.courses.length; i++) {
+          dataToWrite += '<option value="' + data.courses[i].id + '">' + data.courses[i].name + '</option>'
+        }
+        dataToWrite += '</select>';
+      dataToWrite += '</td>';
+      dataToWrite += '<td>';
+        dataToWrite += '<input class="form-control form-control-line time-picker" type="text" name="' + nameAppend + 'Row' + rowNumber + 'Start" placeholder="Click to Select">';
+      dataToWrite += '</td>';
+      dataToWrite += '<td>';
+        dataToWrite += '<input class="form-control form-control-line time-picker" type="text" name="' + nameAppend + 'Row' + rowNumber + 'End" placeholder="Click to Select">';
+      dataToWrite += '</td>';
+      dataToWrite += '</tr>';
+
+      rowSelector.append(dataToWrite);
+      rowNumberSelector.val(rowNumber);
+      }
+    });
+  });
 });
 
 function changePreCourse(data) {

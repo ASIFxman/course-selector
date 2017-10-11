@@ -14,13 +14,6 @@ module.exports = {
     intake: {
       model: 'Intake',
       via: 'section'
-    },
-    student: {
-      collection: 'Student',
-      via: 'section'
-    },
-    routine: {
-      type: 'json'
     }
   }
 };

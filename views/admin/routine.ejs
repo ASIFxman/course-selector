@@ -44,6 +44,58 @@
                           </ul>
                       </div>
                   </div>
+                  <div class="col-xs-12">
+                      <div class="white-box analytics-info">
+                          <h3 class="box-title">New Semester Form</h3>
+                          <form class="form" action="" method="post">
+                            <div class="form-group">
+                              <label>Month Range</label>
+                              <input type="text" class="form-control form-control-line" name="monthRange" placeholder="Eg. January to April">
+                            </div>
+                            <% _.each(data, function(department) { %>
+                              <h4><b><%= department.name %></b></h4>
+
+                              <% _.each(department.intake, function(intake) { %>
+                                <h4>Intake: <%= intake.name %></h4>
+
+                                <% _.each(intake.section, function(section) { %>
+                                  <h5><b>Routine for <%= section.name %></b></h5>
+                                  <% for (var i = 0; i < days.length; i++) { %>
+                                  <p><b><%= days[i] %></b></p>
+                                  <div class="table-responsive">
+                                    <table class="table">
+                                        <tr>
+                                          <th>Course</th>
+                                          <th>StartTime</th>
+                                          <th>EndTime</th>
+                                        </tr>
+                                        <!-- <tr>
+                                          <td>
+                                            <select class="selectCourses form-control form-control-line" name="department<%= department.id %>Intake<%= intake.id %>Section<%= section.id %>Routine<%= days[i] %>Row1Course">
+
+                                            </select>
+                                          </td>
+                                          <td>
+                                            <input class="form-control form-control-line" type="text" name="department<%= department.id %>Intake<%= intake.id %>Section<%= section.id %>Routine<%= days[i] %>Row1Start" placeholder="Click to Select">
+                                          </td>
+                                          <td>
+                                            <input class="form-control form-control-line" type="text" name="department<%= department.id %>Intake<%= intake.id %>Section<%= section.id %>Routine<%= days[i] %>Row1End" placeholder="Click to Select">
+                                          </td>
+                                        </tr> -->
+                                    </table>
+                                  </div>
+                                  <div class="form-group">
+                                    <button type="button" class="btn btn-info addRow" data-name="department<%= department.id %>Intake<%= intake.id %>Section<%= section.id %>Routine<%= days[i] %>">Add Row
+                                      <input type="hidden" value="0">
+                                    </button>
+                                  </div>
+                                  <% } %>
+                                <% }) %>
+                              <% }) %>
+                            <% }) %>
+                          </form>
+                      </div>
+                  </div>
                 </div>
             </div>
             <!-- /.container-fluid -->
@@ -54,3 +106,16 @@
         <!-- ============================================================== -->
     </div>
     <!-- /#wrapper -->
+    <!-- <script type="text/javascript">
+    // document.addEventListener("DOMContentLoaded", function(event) {
+    //   $.get('/admin/getCourses', {}, function (data) {
+    //     if (data.status === 'success') {
+    //       var dataToWrite = "";
+    //       for (var i = 0; i < data.courses.length; i++) {
+    //         dataToWrite += '<option value="' + data.courses[i].id + '>' + data.courses[i].name + '</option>'
+    //       }
+    //       $(".selectCourses").html(dataToWrite);
+    //     }
+    //   });
+    // });
+    </script> -->

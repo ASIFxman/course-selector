@@ -82,16 +82,10 @@
     					</div>
 
               <div id="departmentContainer">
-                <div class="form-group">
-      						<label>Department</label>
-      						<input type="text" class="form-control form-control-line" name="department" placeholder="Department">
-      					</div>
+
               </div>
               <div id="intakeContainer">
-                <div class="form-group">
-      						<label>Intake</label>
-      						<input type="text" class="form-control form-control-line" name="intake" placeholder="Department">
-      					</div>
+
               </div>
 
     					<div class="form-group">
@@ -124,7 +118,7 @@
               <div class="form-group">
                 <select class="form-control form-control-line" name="studentSelect">
                   <% _.each(student, function (eachStudent) { %>
-                    <option value="<%= eachStudent.id %>"><%= eachStudent.studentID %></option>
+                    <option value="<%= eachStudent.id %>"><%= eachStudent.studentID %>: <%= eachStudent.firstName === null ? 'Not' : eachStudent.firstName %> <%= eachStudent.lastName === null ? 'Registered' : eachStudent.lastName %></option>
                   <% }) %>
                 </select>
               </div>
@@ -140,8 +134,44 @@
 
     <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
-      $.get('/admin/getDepartments',{
-        courseId: $("[name=editCourse]").val()
-      }, changePreCourse);
+      $.get('/admin/getDepartments',{}, function (data) {
+        if (data.status === 'success') {
+          var dataToWrite = '';
+          dataToWrite += '<div class="form-group">';
+            dataToWrite += '<label>Department</label>';
+            dataToWrite += '<select class="form-control form-control-line" name="department">';
+            for (var i = 0; i < data.response.length; i++) {
+              dataToWrite += '<option value="' + data.response[i].id + '">' + data.response[i].name + '</option>';
+            }
+            dataToWrite += '</select>';
+          dataToWrite += '</div>';
+
+          $("#departmentContainer").html(dataToWrite);
+
+          $.get('/admin/getIntake', {
+            departmentId: data.response[0].id
+          }, setStudentIntakeData);
+
+          $("[name=department]").on('input', function () {
+            $.get('/admin/getIntake', {
+              departmentId: $("[name=department]").val()
+            }, setStudentIntakeData);
+          });
+        }
+      });
+      function setStudentIntakeData(jsonResponse) {
+        if (jsonResponse.status === 'success') {
+          var dataIntakeToWrite = '';
+          dataIntakeToWrite += '<div class="form-group">';
+            dataIntakeToWrite += '<label>Intake</label>';
+            dataIntakeToWrite += '<select class="form-control form-control-line" name="intake">';
+            for (var j = 0; j < jsonResponse.intake.length; j++) {
+              dataIntakeToWrite += '<option value="' + jsonResponse.intake[j].id + '">' + jsonResponse.intake[j].name + '</option>';
+            }
+            dataIntakeToWrite += '</select>';
+          dataIntakeToWrite += '</div>';
+        }
+        $("#intakeContainer").html(dataIntakeToWrite);
+      }
     });
     </script>
