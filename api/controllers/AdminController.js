@@ -323,18 +323,102 @@ module.exports = {
 				}
 
 				if (typeof req.param("create") != 'undefined') {
-					return res.view({
-						isAdmin: true,
-						data: dataToSend,
-						days: [
-							'Sunday',
-							'Monday',
-							'Twesday',
-							'Wednesday',
-							'Thursday',
-							'Friday',
-							'Saturday'
-						]
+					// console.log(JSON.stringify(req.allParams()));
+					var dataRoutine = {};
+					// console.log(JSON.stringify(dataToSend));
+					_.each(dataToSend, function (department) {
+						dataRoutine[department.id] = {};
+						// console.log('department: ' + department.id);
+						_.each(department.intake, function(intake) {
+							var intakeIdString = intake.id.toString();
+							dataRoutine[department.id][intakeIdString] = [];
+						})
+					})
+
+					// console.log(JSON.stringify(dataRoutine));
+					// console.log(JSON.stringify(dataToSend));
+					_.each(dataToSend, function (department) {
+						// console.log('department: ' + department.id);
+						_.each(department.intake, function(intake) {
+							// console.log(JSON.stringify(intake));
+							_.each(intake.section, function(section) {
+								// console.log('section: ' + section.id);
+								var eachRoutine = [];
+								var nameToSelect = 'department' + department.id + 'Intake' + intake.id + 'Section' + section.id + 'Routine';
+								eachRoutine = {
+									'Section': section.id,
+									'Sunday': [],
+									'Monday': [],
+									'Twesday': [],
+									'Wednesday': [],
+									'Thursday': [],
+									'Friday': [],
+									'Saturday': []
+								};
+								var days = [
+									'Sunday',
+									'Monday',
+									'Twesday',
+									'Wednesday',
+									'Thursday',
+									'Friday',
+									'Saturday'
+								];
+								for (var i = 0; i < days.length; i++) {
+									var dayThings = []
+									var rows = parseInt(req.param(nameToSelect + days[i] + 'RowCounter'));
+									for (var j = 0; j < rows; j++) {
+										dayThings.push({
+											courseId: req.param(nameToSelect + days[i] + 'Row' + [j+1] + 'Course'),
+											start: req.param(nameToSelect + days[i] + 'Row' + [j+1] + 'Start'),
+											end: req.param(nameToSelect + days[i] + 'Row' + [j+1] + 'End')
+										});
+									}
+									eachRoutine[days[i]].push(dayThings);
+								}
+								dataRoutine[department.id][intake.id].push(eachRoutine);
+								// console.log(JSON.stringify(eachRoutine));
+								// console.log(JSON.stringify(dataRoutine));
+							});
+						});
+					});
+
+					// console.log(JSON.stringify(dataRoutine));
+
+					var dataToCreate = {
+						name: req.param('monthRange'),
+						routine: dataRoutine
+					}
+					Semester.update({
+						current: true
+					},
+					{
+						current: false
+					}).exec(function (err) {
+						if (err) {
+							return res.serverError(err);
+						}
+						Semester.create(dataToCreate).exec(function (err) {
+							if (err) {
+								return res.serverError(err);
+							}
+							return res.view({
+								isAdmin: true,
+								data: dataToSend,
+								days: [
+									'Sunday',
+									'Monday',
+									'Twesday',
+									'Wednesday',
+									'Thursday',
+									'Friday',
+									'Saturday'
+								],
+								notification: true,
+								notificationHeader: 'Success',
+								notificationBody: 'Successfully Created Semester'
+							});
+						});
 					});
 				} else {
 					return res.view({

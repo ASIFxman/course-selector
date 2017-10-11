@@ -220,15 +220,17 @@ $(document).ready(function () {
         dataToWrite += '</select>';
       dataToWrite += '</td>';
       dataToWrite += '<td>';
-        dataToWrite += '<input class="form-control form-control-line time-picker" type="text" name="' + nameAppend + 'Row' + rowNumber + 'Start" placeholder="Click to Select">';
+        dataToWrite += '<input class="form-control form-control-line timepicker" type="text" name="' + nameAppend + 'Row' + rowNumber + 'Start" placeholder="Click to Select">';
       dataToWrite += '</td>';
       dataToWrite += '<td>';
-        dataToWrite += '<input class="form-control form-control-line time-picker" type="text" name="' + nameAppend + 'Row' + rowNumber + 'End" placeholder="Click to Select">';
+        dataToWrite += '<input class="form-control form-control-line timepicker" type="text" name="' + nameAppend + 'Row' + rowNumber + 'End" placeholder="Click to Select">';
       dataToWrite += '</td>';
       dataToWrite += '</tr>';
 
       rowSelector.append(dataToWrite);
       rowNumberSelector.val(rowNumber);
+
+      $('.timepicker').wickedpicker();
       }
     });
   });
