@@ -32,30 +32,64 @@
                     <!-- /.col-lg-12 -->
                 </div>
                 <div class="row">
+                  <% if (availableSemester) { %>
                   <div class="col-sm-6 col-xs-12">
                       <div class="white-box analytics-info">
-                          <h3 class="box-title">Create</h3>
+                          <h3 class="box-title">Register Courses for <%= semesterName %></h3>
                           <p>
-                            Create a new record in the database.
+                            Select subjects to take for Semester Number <%= semesterNumber + 1 %>.
                           </p>
-                          <ul class="list-inline two-part">
-                            <li></li>
-                              <li class="text-right"><button class="btn btn-primary" data-toggle="modal" data-target="#createModal">Create A New Course</button></li>
-                          </ul>
+                          <form class="form form-material" action="" method="post">
+                            <div class="form-group">
+                              <select class="form-control form-control-line selectCoursesForRegistration" name="courses" multiple>
+
+                              </select>
+                            </div>
+                            <ul class="list-inline two-part">
+                              <li></li>
+                                <li class="text-right"><input type="submit" class="btn btn-primary" value="Register"></li>
+                            </ul>
+                          </form>
                       </div>
                   </div>
                     <div class="col-sm-6 col-xs-12">
                         <div class="white-box analytics-info">
-                            <h3 class="box-title">Manage</h3>
-                            <p>
-                              View and Edit database records.
-                            </p>
-                            <ul class="list-inline two-part">
-                                <li></li>
-                                <li class="text-right"><button class="btn btn-danger" data-toggle="modal" data-target="#manageModal">View and Edit Course</button></li>
-                            </ul>
+                            <h3 class="box-title">Routine</h3>
+                            <% _.each(routine, function (section) { %>
+                              <h4>
+                                Section <%= section['Section'] %>
+                              </h4>
+                              <div class="table-responsive">
+                                <table class="table">
+                                  <tr>
+                                    <th>Day</th>
+                                    <th>Course</th>
+                                    <th>Time</th>
+                                  </tr>
+                                  <% _.each(days, function (dayName) { %>
+                                    <% _.each(section[dayName][0], function (day, index) { %>
+                                      <tr>
+                                        <td><%= index === 0 ? dayName : '' %></td>
+                                        <td class="getCourseName"><%= day.courseId %></td>
+                                        <td><%= day.start %> - <%= day.end %></td>
+                                      </tr>
+                                    <% }) %>
+                                  <% }) %>
+                                </table>
+                              </div>
+                            <% }) %>
                         </div>
                     </div>
+                  <% } else { %>
+                    <div class="col-xs-12">
+                        <div class="white-box analytics-info">
+                            <h3 class="box-title">No New Semesters</h3>
+                            <p>
+                              Please check back later. No new semesters.
+                            </p>
+                        </div>
+                    </div>
+                  <% } %>
                 </div>
             </div>
             <!-- /.container-fluid -->
@@ -66,3 +100,35 @@
         <!-- ============================================================== -->
     </div>
     <!-- /#wrapper -->
+
+    <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+      $(".getCourseName").map(function () {
+      	var _this = $(this);
+        $.get('/student/getCourseName', {
+          courseId: _this.html()
+        }, function (data) {
+          if (data.status === 'success') {
+            _this.html(data.courses[0].name);
+          }
+        });
+      });
+      $.get('/student/getCourseName', {
+        departmentId: <%= req.session.student.department %>,
+        studentID: <%= req.session.student.id %>
+      }, function (data) {
+        if (data.status === 'success') {
+          var dataToWrite = "";
+          if (typeof data.completed != 'undefined') {
+            for (var i = 0; i < data.completed.length; i++) {
+              dataToWrite += '<option disabled>' + data.completed[i].name + ' (Completed)</option>';
+            }
+          }
+          for (var i = 0; i < data.courses.length; i++) {
+            dataToWrite += '<option value="' + data.courses[i].id + '">' + data.courses[i].name + ' (Credit: ' + data.courses[i].credit + ')' + '</option>';
+          }
+          $("[name=courses]").html(dataToWrite);
+        }
+      });
+    });
+    </script>

@@ -234,6 +234,30 @@ $(document).ready(function () {
       }
     });
   });
+  $("[name=courses]").on('input', function () {
+    var selectedArray = $("[name=courses]").val();
+
+    $(".getCourseName").map(function () {
+      var _this = $(this);
+      _this.removeClass('text-danger');
+    })
+
+    for (var i = 0; i < selectedArray.length; i++) {
+      $.get('/student/getCourseName', {
+        courseId: selectedArray[i]
+      }, function (data) {
+        if (data.status === 'success') {
+          $(".getCourseName").map(function () {
+            var _this = $(this);
+            if (_this.html() === data.courses[0].name) {
+              _this.addClass('text-danger');
+            }
+          });
+        }
+      });
+    }
+
+  });
 });
 
 function changePreCourse(data) {

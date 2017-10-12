@@ -81,13 +81,116 @@ module.exports = {
 		return res.redirect('/student/login');
 	},
 	view: function (req, res, next) {
-		return res.view({
-			isAdmin: true
+		Student.findOne(req.session.student.id)
+		.populate('course')
+		.populate('completedSemester')
+		.exec(function (err, response) {
+			if (err) {
+				return res.serverError(err);
+			}
+			var studentData = response;
+			Semester.findOne({
+				current: true
+			}).exec(function (err, semester) {
+				if (err) {
+					return res.serverError(err);
+				}
+				var semesterData = semester;
+
+				if (typeof semesterData == 'undefined') {
+					return res.view({
+						isAdmin: true,
+						availableSemester: false
+					});
+				}
+
+				for (var i = 0; i < studentData.completedSemester.length; i++) {
+					if (studentData.completedSemester[i].id === semesterData.id) {
+						return res.view({
+							isAdmin: true,
+							availableSemester: false
+						});
+					}
+				}
+				// console.log(JSON.stringify(semesterData.routine[studentData.department][studentData.intake]));
+				return res.view({
+					isAdmin: true,
+					availableSemester: true,
+					semesterName: semesterData.name,
+					semesterNumber: studentData.completedSemester.length,
+					routine: semesterData.routine[studentData.department][studentData.intake],
+					days: [
+						'Sunday',
+						'Monday',
+						'Twesday',
+						'Wednesday',
+						'Thursday',
+						'Friday',
+						'Saturday'
+					]
+				});
+			})
 		});
 	},
 	pending: function (req, res, next) {
 		return res.view({
 			isAdmin: true
 		});
+	},
+	getCourseName: function (req, res, next) {
+		var searchParam = {};
+		if (typeof req.param('departmentId') != 'undefined') {
+			searchParam = {
+				department: req.param('departmentId')
+			}
+		} else if (typeof req.param('courseId') != 'undefined') {
+			searchParam = {
+				id: req.param('courseId')
+			}
+		}
+		Course.find(searchParam)
+		.exec(function (err, response) {
+			if (typeof req.param('studentId') != 'undefined') {
+				Student.findOne(req.param('studentId'))
+				.populate('course')
+				.exec(function (err, studentWithCourse) {
+					if (err) {
+						return res.json({
+							status: 'error'
+						});
+					} else if (studentWithCourse.length === 0) {
+						return res.json({
+							status: 'success',
+							courses: response,
+							completed: []
+						});
+					} else {
+						var checkCourses = response;
+						var studentCourse = studentWithCourse;
+						var unCompletedSubjects = _.difference(checkCourses, studentCourse);
+						return res.json({
+							status: 'success',
+							courses: unCompletedSubjects,
+							completed: studentCourse
+						});
+					}
+				})
+			} else {
+				if (err) {
+					return res.json({
+						status: 'error'
+					});
+				} else if (response.length === 0) {
+					return res.json({
+						status: 'empty'
+					});
+				} else {
+					return res.json({
+						status: 'success',
+						courses: response
+					});
+				}
+			}
+		})
 	}
 };
