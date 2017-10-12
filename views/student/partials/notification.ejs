@@ -1,0 +1,13 @@
+<% if (typeof notification != 'undefined') { %>
+  <script type="text/javascript">
+    $.toast({
+         heading: "<%= notificationHeader %>",
+         text: "<%= notificationBody %>",
+         position: 'top-right',
+         loaderBg: '#fff',
+         icon: 'success',
+         hideAfter: 5000,
+         stack: 6
+     })
+  </script>
+<% } %>

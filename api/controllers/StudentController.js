@@ -81,6 +81,13 @@ module.exports = {
 		return res.redirect('/student/login');
 	},
 	view: function (req, res, next) {
-		res.view();
+		return res.view({
+			isAdmin: true
+		});
+	},
+	pending: function (req, res, next) {
+		return res.view({
+			isAdmin: true
+		});
 	}
 };

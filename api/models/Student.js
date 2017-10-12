@@ -49,6 +49,14 @@ module.exports = {
       // The Courses Completed
       collection: 'Course',
       dominant: true
+    },
+    completedSemester: {
+      collection: 'Semester',
+      dominant: true
+    },
+    requests: {
+      collection: 'Request',
+      via: 'student'
     }
   },
   beforeCreate: function (values, cb) {
