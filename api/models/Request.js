@@ -12,9 +12,12 @@ module.exports = {
       model: 'Student',
       via: 'requests'
     },
-    courses: {
-      collection: 'Course',
+    semester: {
+      model: 'Semester',
       dominant: true
+    },
+    details: {
+      type: 'json'
     },
     status: {
       type: 'string',

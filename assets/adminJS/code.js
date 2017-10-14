@@ -234,8 +234,31 @@ $(document).ready(function () {
       }
     });
   });
-  $("[name=courses]").on('input', function () {
-    var selectedArray = $("[name=courses]").val();
+  $(".selectCoursesForRegistration").on('input', function () {
+    var selectedArray = [];
+    var thisSelectedArray = [];
+
+    if ($(this).val() != null && Array.isArray($(this).val())) {
+      var toPushToSelected = $(this).val();
+      for (var i = 0; i < toPushToSelected.length; i++) {
+        thisSelectedArray.push(toPushToSelected[i]);
+      }
+    }
+
+    // for (var i = 0; i < thisSelectedArray.length; i++) {
+    //   $(".selectCoursesForRegistration").map(function () {
+    //
+    //   })thisSelectedArray[i];
+    // }
+
+    $(".selectCoursesForRegistration").map(function () {
+      if ($(this).val() != null && Array.isArray($(this).val())) {
+        var toPushToSelected = $(this).val();
+        for (var i = 0; i < toPushToSelected.length; i++) {
+          selectedArray.push(toPushToSelected[i]);
+        }
+      }
+    });
 
     $(".getCourseName").map(function () {
       var _this = $(this);
@@ -257,6 +280,81 @@ $(document).ready(function () {
       });
     }
 
+  });
+  $("#registerCourses").submit(function (event) {
+    event.preventDefault();
+    // console.log($("#registerCourses").serialize());
+    $.get('/student/checkRegistration?' + $("#registerCourses").serialize(),{}, function (data) {
+      if (data.status === 'success') {
+        $("#registerCourses").unbind('submit').submit();
+      } else {
+        $.toast({
+             heading: data.errorHead,
+             text: data.errorText,
+             position: 'top-right',
+             loaderBg: '#fff',
+             icon: 'error',
+             hideAfter: 5000,
+             stack: 6
+         })
+      }
+    })
+  });
+  $(".acceptRegistrationButton").click(function () {
+    var regId = $(this).attr("data-id");
+    $.get('/admin/acceptRegistration', {
+      regId: regId
+    }, function (data) {
+      if (data.status === "success") {
+        $.toast({
+             heading: "Success",
+             text: "Request accepted",
+             position: 'top-right',
+             loaderBg: '#fff',
+             icon: 'success',
+             hideAfter: 5000,
+             stack: 6
+         });
+      } else {
+        $.toast({
+             heading: "Error",
+             text: "Request could not be accepted",
+             position: 'top-right',
+             loaderBg: '#fff',
+             icon: 'error',
+             hideAfter: 5000,
+             stack: 6
+         });
+      }
+    });
+  });
+  $(".rejectRegistrationButton").click(function () {
+    var regId = $(this).attr("data-id");
+    $.get('/admin/rejectRegistration', {
+      regId: regId
+    }, function (data) {
+      if (data.status === "success") {
+        $.toast({
+             heading: "Success",
+             text: "Request rejected",
+             position: 'top-right',
+             loaderBg: '#fff',
+             icon: 'success',
+             hideAfter: 5000,
+             stack: 6
+         });
+      } else {
+        $.toast({
+             heading: "Error",
+             text: "Request could not be rejected",
+             position: 'top-right',
+             loaderBg: '#fff',
+             icon: 'error',
+             hideAfter: 5000,
+             stack: 6
+         });
+      }
+    });
   });
 });
 

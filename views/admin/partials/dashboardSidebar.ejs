@@ -13,30 +13,37 @@
             <li class="hidden-lg hidden-xl" style="padding: 10px 0 0;">
               <a href="javascript:void(0)" class="waves-effect open-close"><i class="fa fa-times fa-fw" aria-hidden="true"></i>Close Navigation</a>
             </li>
-            <li style="padding: 10px 0 0;">
-                <a href="/admin/dashboard" class="waves-effect"><i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>Dashboard</a>
-            </li>
-            <li>
-                <a href="/admin/department" class="waves-effect"><i class="fa fa-graduation-cap fa-fw" aria-hidden="true"></i>Department</a>
-            </li>
-            <li>
-                <a href="/admin/course" class="waves-effect"><i class="fa fa-book fa-fw" aria-hidden="true"></i>Course</a>
-            </li>
-            <li>
-                <a href="/admin/intake" class="waves-effect"><i class="fa fa-filter fa-fw" aria-hidden="true"></i>Intake</a>
-            </li>
-            <li>
-                <a href="/admin/section" class="waves-effect"><i class="fa fa-font fa-fw" aria-hidden="true"></i>Section</a>
-            </li>
-            <li>
-                <a href="/admin/routine" class="waves-effect"><i class="fa fa-table fa-fw" aria-hidden="true"></i>Semester</a>
-            </li>
-            <li>
-                <a href="/admin/student" class="waves-effect"><i class="fa fa-group fa-fw" aria-hidden="true"></i>Student</a>
-            </li>
-            <li>
-                <a href="/admin/registration" class="waves-effect"><i class="fa fa-user fa-fw" aria-hidden="true"></i>Accept Registration</a>
-            </li>
+            <% if (req.session.admin.userType === 'admin') { %>
+              <li style="padding: 10px 0 0;">
+                  <a href="/admin/dashboard" class="waves-effect"><i class="fa fa-clock-o fa-fw" aria-hidden="true"></i>Dashboard</a>
+              </li>
+              <li>
+                  <a href="/admin/department" class="waves-effect"><i class="fa fa-graduation-cap fa-fw" aria-hidden="true"></i>Department</a>
+              </li>
+              <li>
+                  <a href="/admin/course" class="waves-effect"><i class="fa fa-book fa-fw" aria-hidden="true"></i>Course</a>
+              </li>
+              <li>
+                  <a href="/admin/intake" class="waves-effect"><i class="fa fa-filter fa-fw" aria-hidden="true"></i>Intake</a>
+              </li>
+              <li>
+                  <a href="/admin/section" class="waves-effect"><i class="fa fa-font fa-fw" aria-hidden="true"></i>Section</a>
+              </li>
+              <li>
+                  <a href="/admin/routine" class="waves-effect"><i class="fa fa-table fa-fw" aria-hidden="true"></i>Semester</a>
+              </li>
+              <li>
+                  <a href="/admin/student" class="waves-effect"><i class="fa fa-group fa-fw" aria-hidden="true"></i>Student</a>
+              </li>
+            <% } %>
+              <li>
+                  <a href="/admin/registration" class="waves-effect"><i class="fa fa-graduation-cap fa-fw" aria-hidden="true"></i>Accept Registration</a>
+              </li>
+            <% if (req.session.admin.userType === 'admin') { %>
+              <li>
+                  <a href="/admin/createUser" class="waves-effect"><i class="fa fa-user fa-fw" aria-hidden="true"></i>Create User</a>
+              </li>
+            <% } %>
         </ul>
     </div>
 </div>

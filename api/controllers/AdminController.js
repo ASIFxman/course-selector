@@ -499,20 +499,50 @@ module.exports = {
 			});
 		}
 	},
-	registration: function (req, res, next) {
+	createUser: function (req, res, next) {
 		if (typeof req.param("create") != 'undefined') {
-			return res.view({
-				isAdmin: true
-			});
-		} else if (typeof req.param("manage") != 'undefined') {
-			return res.view({
-				isAdmin: true
+			var dataToCreate = {
+				username: req.param('username'),
+				password: req.param('password'),
+				userType: req.param('userType')
+			}
+			Admin.create(dataToCreate).exec(function (err) {
+				if (err) {
+					return res.serverError(err);
+				}
+				return res.view({
+					isAdmin: true,
+					notification: true,
+					notificationHeader: 'Success',
+					notificationBody: 'Successfully Created User'
+				});
 			});
 		} else {
 			return res.view({
 				isAdmin: true
 			});
 		}
+	},
+	registration: function (req, res, next) {
+		Request.find({
+			status: 'pending'
+		})
+		.populate('semester')
+		.populate('student')
+		.exec(function (err, requests) {
+			if (err) {
+				return res.serverError(err)
+			}
+			for (var i = 0; i < requests.length; i++) {
+				if (!requests[i].semester.current) {
+					delete requests[i];
+				}
+			}
+			return res.view({
+				isAdmin: true,
+				requests: requests
+			});
+		});
 	},
 	getDepartments: function (req, res, next) {
 		Department.find().exec(function (err, response) {
@@ -671,6 +701,36 @@ module.exports = {
 			}
 		})
 	},
+	acceptRegistration: function (req, res, next) {
+		Request.update(req.param('regId'), {
+			status: 'accepted'
+		}).exec(function (err) {
+			if (err) {
+				return res.json({
+					status: 'error'
+				});
+			}
+
+			return res.json({
+			status: 'success'
+			});
+		});
+	},
+	rejectRegistration: function (req, res, next) {
+		Request.update(req.param('regId'), {
+			status: 'denied'
+		}).exec(function (err) {
+			if (err) {
+				return res.json({
+					status: 'error'
+				});
+			}
+
+			return res.json({
+			status: 'success'
+			});
+		});
+	},
 	processLogin: function (req, res, next) {
 		var password = req.param('password');
 
@@ -691,8 +751,11 @@ module.exports = {
 						req.session.admin = adminFound;
 						req.session.save();
 
-						return res.redirect('/admin/dashboard');
-
+						if (adminFound.userType === 'teacher') {
+							return res.redirect('/admin/registration');
+						} else {
+							return res.redirect('/admin/dashboard');
+						}
 					} else {
 						req.session.adminAuthenticated = false;
 						req.session.admin = null;

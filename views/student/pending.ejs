@@ -32,30 +32,29 @@
                     <!-- /.col-lg-12 -->
                 </div>
                 <div class="row">
-                  <div class="col-sm-6 col-xs-12">
-                      <div class="white-box analytics-info">
-                          <h3 class="box-title">Create</h3>
-                          <p>
-                            Create a new record in the database.
-                          </p>
-                          <ul class="list-inline two-part">
-                            <li></li>
-                              <li class="text-right"><button class="btn btn-primary" data-toggle="modal" data-target="#createModal">Create A New Course</button></li>
-                          </ul>
-                      </div>
-                  </div>
-                    <div class="col-sm-6 col-xs-12">
+                  <% _.each(requests, function(request) { %>
+                    <div class="col-xs-12">
                         <div class="white-box analytics-info">
-                            <h3 class="box-title">Manage</h3>
-                            <p>
-                              View and Edit database records.
-                            </p>
+                            <h3 class="box-title">Request for Semester: <%= request.semester.name %></h3>
+                            <% _.each(request.details, function (course, key) { %>
+                              <h4><b>Section <%= key %></b></h4>
+                              <% _.each(course, function (eachCourse) { %>
+                                <h5 class="getCourseName"><%= eachCourse %></h5>
+                              <% }) %>
+                            <% }) %>
                             <ul class="list-inline two-part">
-                                <li></li>
-                                <li class="text-right"><button class="btn btn-danger" data-toggle="modal" data-target="#manageModal">View and Edit Course</button></li>
+                              <li></li>
+                              <% if(request.status === 'pending') { %>
+                                <li class="text-right"><h4 class="text-warning text-uppercase"><b>Status: <%= request.status %></b></h4></li>
+                              <% } else if (request.status === 'accepted') { %>
+                                <li class="text-right"><h4 class="text-success text-uppercase"><b>Status: <%= request.status %></b></h4></li>
+                              <% } else { %>
+                                <li class="text-right"><h4 class="text-danger text-uppercase"><b>Status: <%= request.status %></b></h4></li>
+                              <% } %>
                             </ul>
                         </div>
                     </div>
+                  <% }); %>
                 </div>
             </div>
             <!-- /.container-fluid -->
@@ -66,3 +65,17 @@
         <!-- ============================================================== -->
     </div>
     <!-- /#wrapper -->
+    <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+      $(".getCourseName").map(function () {
+      	var _this = $(this);
+        $.get('/student/getCourseName', {
+          courseId: _this.html()
+        }, function (data) {
+          if (data.status === 'success') {
+            _this.html(data.courses[0].name);
+          }
+        });
+      });
+    });
+    </script>

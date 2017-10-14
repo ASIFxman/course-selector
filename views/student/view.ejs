@@ -39,15 +39,19 @@
                           <p>
                             Select subjects to take for Semester Number <%= semesterNumber + 1 %>.
                           </p>
-                          <form class="form form-material" action="" method="post">
-                            <div class="form-group">
-                              <select class="form-control form-control-line selectCoursesForRegistration" name="courses" multiple>
+                          <form id="registerCourses" class="form form-material" action="/student/pending" method="post">
+                            <% _.each(routine, function (section) { %>
+                              <div class="form-group">
+                                <label>Section <%= section['Section'] %></label>
+                                <select class="form-control form-control-line selectCoursesForRegistration" name="courses<%= section['Section'] %>" multiple>
 
-                              </select>
-                            </div>
+                                </select>
+                              </div>
+                              <input type="hidden" name="section" value="<%= section['Section'] %>">
+                            <% }) %>
                             <ul class="list-inline two-part">
                               <li></li>
-                                <li class="text-right"><input type="submit" class="btn btn-primary" value="Register"></li>
+                                <li class="text-right"><input type="submit" class="btn btn-primary" name="create" value="Register"></li>
                             </ul>
                           </form>
                       </div>
@@ -127,7 +131,7 @@
           for (var i = 0; i < data.courses.length; i++) {
             dataToWrite += '<option value="' + data.courses[i].id + '">' + data.courses[i].name + ' (Credit: ' + data.courses[i].credit + ')' + '</option>';
           }
-          $("[name=courses]").html(dataToWrite);
+          $(".selectCoursesForRegistration").html(dataToWrite);
         }
       });
     });

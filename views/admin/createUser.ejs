@@ -33,26 +33,37 @@
                     <!-- /.col-lg-12 -->
                 </div>
                 <div class="row">
-                  <% _.each(requests, function(request) { %>
                     <div class="col-xs-12">
                         <div class="white-box analytics-info">
-                            <h3 class="box-title"><%= request.student.firstName %> <%= request.student.lastName %> (ID: <%= request.student.studentID %>)</h3>
-                            <% _.each(request.details, function (course, key) { %>
-                              <h4><b>Section <%= key %></b></h4>
-                              <% _.each(course, function (eachCourse) { %>
-                                <h5 class="getCourseName"><%= eachCourse %></h5>
-                              <% }) %>
-                            <% }) %>
+                          <form class="form form-material" action="" method="post">
+                            <div class="form-group">
+                              <label>Username</label>
+                              <input class="form-control form-control-line" type="text" name="username">
+                            </div>
+                            <div class="form-group">
+                              <label>Password</label>
+                              <input class="form-control form-control-line" type="password" name="password">
+                            </div>
+                            <div class="form-group">
+                              <label>Confirm Password</label>
+                              <input class="form-control form-control-line" type="password" name="confirmPassword">
+                            </div>
+                            <div class="form-group">
+                              <label>User Type</label>
+                              <select class="form-control form-control-line" name="userType">
+                                <option value="teacher">Teacher</option>
+                                <option value="admin">Admin</option>
+                              </select>
+                            </div>
                             <ul class="list-inline two-part">
                               <li></li>
                                 <li class="text-right">
-                                  <button class="acceptRegistrationButton btn btn-primary" data-id="<%= request.id %>" type="button"><i class="fa fa-check" aria-hidden="true"></i></button>
-                                  <button class="rejectRegistrationButton btn btn-danger" data-id="<%= request.id %>" type="button"><i class="fa fa-times" aria-hidden="true"></i></button>
+                                  <input type="submit" class="btn btn-primary" name="create" value="Submit">
                                 </li>
                             </ul>
+                          </form>
                         </div>
                     </div>
-                  <% }); %>
                 </div>
             </div>
             <!-- /.container-fluid -->
