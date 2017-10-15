@@ -36,6 +36,7 @@
                   <% _.each(requests, function(request) { %>
                     <div class="col-xs-12">
                         <div class="white-box analytics-info">
+                          <% if(typeof request != 'undefined') { %>
                             <h3 class="box-title"><%= request.student.firstName %> <%= request.student.lastName %> (ID: <%= request.student.studentID %>)</h3>
                             <% _.each(request.details, function (course, key) { %>
                               <h4><b>Section <%= key %></b></h4>
@@ -50,6 +51,9 @@
                                   <button class="rejectRegistrationButton btn btn-danger" data-id="<%= request.id %>" type="button"><i class="fa fa-times" aria-hidden="true"></i></button>
                                 </li>
                             </ul>
+                            <% } else { %>
+                              <h3 class="box-title">No Requests</h3>
+                            <% } %>
                         </div>
                     </div>
                   <% }); %>

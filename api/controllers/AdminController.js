@@ -533,6 +533,7 @@ module.exports = {
 			if (err) {
 				return res.serverError(err)
 			}
+
 			for (var i = 0; i < requests.length; i++) {
 				if (!requests[i].semester.current) {
 					delete requests[i];
@@ -704,15 +705,55 @@ module.exports = {
 	acceptRegistration: function (req, res, next) {
 		Request.update(req.param('regId'), {
 			status: 'accepted'
-		}).exec(function (err) {
+		})
+		.exec(function (err, response) {
 			if (err) {
+				// console.log('1');
 				return res.json({
 					status: 'error'
 				});
 			}
+			// console.log(response);
+			var subjectList = response[0].details;
+			// console.log(subjectList);
+			var courseIdArray = [];
+			var student = parseInt(response[0].student);
+			var semesterNumber = parseInt(response[0].semester);
+			// console.log(student);
 
-			return res.json({
-			status: 'success'
+			_.each(subjectList, function (subjectInSection) {
+				_.each(subjectInSection, function (eachSubject) {
+					courseIdArray.push(parseInt(eachSubject));
+				})
+			});
+
+			Student.findOne(student)
+			.populate('course')
+			.populate('completedSemester')
+			.exec(function (err, studentRecord) {
+				if (err || !studentRecord) {
+					// console.log('2');
+					return res.json({
+						status: 'error'
+					});
+				}
+				for (var i = 0; i < courseIdArray.length; i++) {
+					studentRecord.course.add(courseIdArray[i]);
+				}
+
+				studentRecord.completedSemester.add(semesterNumber);
+
+				studentRecord.save(function(err) {
+		      if (err) {
+						// console.log('3');
+						return res.json({
+							status: 'error'
+						});
+					}
+					return res.json({
+						status: 'success'
+					});
+		    });
 			});
 		});
 	},
