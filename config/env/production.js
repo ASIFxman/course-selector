@@ -27,12 +27,12 @@ module.exports = {
   connections: {
     openshiftMySQLServer: {
   		adapter: 'sails-mysql',
-  		host: process.env.OPENSHIFT_MYSQL_DB_HOST,
-  		user: process.env.OPENSHIFT_MYSQL_DB_USERNAME,
-  		password: process.env.OPENSHIFT_MYSQL_DB_PASSWORD,
-  		port: process.env.OPENSHIFT_MYSQL_DB_PORT,
-  		database: 'project'
-      // url: 'mysql2://adminMbjXtn3:A1M6JT9mMRv2@127.10.77.2:3306/bongoair'
+  		host: process.env.CLEARDB_DATABASE_HOST,
+  		user: process.env.CLEARDB_DATABASE_USERNAME,
+  		password: process.env.CLEARDB_DATABASE_PASSWORD,
+  		port: process.env.CLEARDB_DATABASE_PORT,
+  		database: process.env.CLEARDB_DATABASE_SCHEMA
+      // url: 'mysql://b1865af9135f0f:65968c09@us-cdbr-iron-east-05.cleardb.net/heroku_934e30b75e483f1'
   	}
   },
   session: {
