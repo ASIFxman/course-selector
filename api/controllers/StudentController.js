@@ -159,6 +159,9 @@ function combination (arr) {
 }
 
 module.exports = {
+	'index': function (req, res, next) {
+		return res.redirect('/student/view');
+	},
 	processLogin: function (req, res, next) {
 		var password = req.param('password');
 
@@ -232,67 +235,79 @@ module.exports = {
 		return res.redirect('/student/login');
 	},
 	view: function (req, res, next) {
-		Request.find({
-			student: req.session.student.id
-		}).populate('semester')
-		.exec(function (err, request) {
+		Semester.find()
+		.exec(function (err, resp) {
 			if (err) {
 				return res.serverError(err);
 			}
-			for (var i = 0; i < request.length; i++) {
-				if (request[i].semester.current && request[i].status !== 'denied') {
-					return res.redirect('/student/pending');
-				}
+			if (resp.length === 0) {
+				return res.view({
+					isAdmin: true,
+					availableSemester: false
+				});
 			}
-			Student.findOne(req.session.student.id)
-			.populate('course')
-			.populate('completedSemester')
-			.exec(function (err, response) {
+			Request.find({
+				student: req.session.student.id
+			}).populate('semester')
+			.exec(function (err, request) {
 				if (err) {
 					return res.serverError(err);
 				}
-				var studentData = response;
-				Semester.findOne({
-					current: true
-				}).exec(function (err, semester) {
+				for (var i = 0; i < request.length; i++) {
+					if (request[i].semester.current && request[i].status !== 'denied') {
+						return res.redirect('/student/pending');
+					}
+				}
+				Student.findOne(req.session.student.id)
+				.populate('course')
+				.populate('completedSemester')
+				.exec(function (err, response) {
 					if (err) {
 						return res.serverError(err);
 					}
-					var semesterData = semester;
+					var studentData = response;
+					Semester.findOne({
+						current: true
+					}).exec(function (err, semester) {
+						if (err) {
+							return res.serverError(err);
+						}
+						var semesterData = semester;
 
-					if (typeof semesterData == 'undefined') {
-						return res.view({
-							isAdmin: true,
-							availableSemester: false
-						});
-					}
-
-					for (var i = 0; i < studentData.completedSemester.length; i++) {
-						if (studentData.completedSemester[i].id === semesterData.id) {
+						if (typeof semesterData == 'undefined') {
 							return res.view({
 								isAdmin: true,
 								availableSemester: false
 							});
 						}
-					}
-					// console.log(JSON.stringify(semesterData.routine[studentData.department][studentData.intake]));
-					return res.view({
-						isAdmin: true,
-						availableSemester: true,
-						semesterName: semesterData.name,
-						semesterNumber: studentData.completedSemester.length,
-						routine: semesterData.routine[studentData.department][studentData.intake],
-						days: [
-							'Sunday',
-							'Monday',
-							'Twesday',
-							'Wednesday',
-							'Thursday',
-							'Friday',
-							'Saturday'
-						]
-					});
-				})
+
+						for (var i = 0; i < studentData.completedSemester.length; i++) {
+							if (studentData.completedSemester[i].id === semesterData.id) {
+								return res.view({
+									isAdmin: true,
+									availableSemester: false
+								});
+							}
+						}
+						// console.log(JSON.stringify(semesterData.routine[studentData.department][studentData.intake]));
+						return res.view({
+							isAdmin: true,
+							availableSemester: true,
+							semesterName: semesterData.name,
+							semesterNumber: studentData.completedSemester.length,
+							routine: semesterData.routine[studentData.department][studentData.intake],
+							days: [
+								'Sunday',
+								'Monday',
+								'Twesday',
+								'Wednesday',
+								'Thursday',
+								'Friday',
+								'Saturday'
+							]
+						});
+					})
+				});
 			});
 		});
 	},

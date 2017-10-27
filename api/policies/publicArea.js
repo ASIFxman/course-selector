@@ -8,5 +8,10 @@
  *
  */
 module.exports = function(req, res, next) {
+  if (req.session.admin) {
+    return res.redirect('/admin/dashboard');
+  } else if (req.session.student) {
+    return res.redirect('/student/view');
+  }
   return next();
 };
