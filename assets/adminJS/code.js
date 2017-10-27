@@ -426,7 +426,7 @@ function getDepartmentForEdit() {
       dataToWrite += '<tbody>'
       for (var i = 0; i < data.response.length; i++) {
         dataToWrite += '<tr>'
-        dataToWrite += '<td>' + data.response[i].id + '</td>'
+        dataToWrite += '<td>' + (i+1) + '</td>'
         dataToWrite += '<td>' + data.response[i].name + '</td>'
         dataToWrite += '<td>' + data.response[i].description + '</td>'
         dataToWrite += '<td><a class="editDepartment" data-id="' + data.response[i].id + '"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>'
