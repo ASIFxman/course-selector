@@ -744,7 +744,7 @@ module.exports = {
 				studentRecord.completedSemester.add(semesterNumber);
 
 				studentRecord.save(function(err) {
-		      if (err) {
+		      		if (err) {
 						// console.log('3');
 						return res.json({
 							status: 'error'

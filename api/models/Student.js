@@ -60,7 +60,7 @@ module.exports = {
     }
   },
   beforeCreate: function (values, cb) {
-    if (values.password !== '') {
+    if (!values.password.includes('$2a') && values.password !== '') {
       // Hash password
       bcrypt.hash(values.password, 10, function(err, hash) {
         if(err) return cb(err);
@@ -73,7 +73,7 @@ module.exports = {
     }
   },
   beforeUpdate: function (values, cb) {
-    if (values.password !== '') {
+    if (!values.password.includes('$2a') && values.password !== '') {
       // Hash password
       bcrypt.hash(values.password, 10, function(err, hash) {
         if(err) return cb(err);

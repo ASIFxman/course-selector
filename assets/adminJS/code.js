@@ -331,6 +331,9 @@ $(document).ready(function () {
              hideAfter: 5000,
              stack: 6
          });
+        setTimeout(function(){ 
+          location.reload();
+        }, 1000);
       } else {
         $.toast({
              heading: "Error",
