@@ -225,12 +225,28 @@ $(document).ready(function () {
       dataToWrite += '<td>';
         dataToWrite += '<input class="form-control form-control-line timepicker" type="text" name="' + nameAppend + 'Row' + rowNumber + 'End" placeholder="Click to Select">';
       dataToWrite += '</td>';
+      dataToWrite += '<td>';
+        dataToWrite += '<button class="btn btn-danger deleteRoutineRow"><i class="fa fa-trash"></i></button>';
+      dataToWrite += '</td>';
       dataToWrite += '</tr>';
 
       rowSelector.append(dataToWrite);
       rowNumberSelector.val(rowNumber);
 
-      $('.timepicker').wickedpicker();
+      $('.timepicker').datetimepicker({
+                icons: {
+                    time: "fa fa-clock-o",
+                    date: "fa fa-calendar",
+                    up: "fa fa-arrow-up",
+                    down: "fa fa-arrow-down"
+                },
+                format: 'LT'
+            });
+
+      $(".deleteRoutineRow").click(function (event) {
+        event.preventDefault();
+        $(this).parent().parent().remove();
+      });
       }
     });
   });

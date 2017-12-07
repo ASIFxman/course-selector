@@ -36,7 +36,8 @@ module.exports = {
       if (!err && count === 0) {
         Admin.create({
           username: "admin",
-          password: "admin"
+          password: "admin",
+          userType: "admin"
         }).exec(function (err, admin) {
           if (err) {
             console.error("Seed Error!");

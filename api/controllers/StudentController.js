@@ -78,7 +78,7 @@ function checkIfValidRoutine(courses, department, intake, sectionId, callback) {
 		var days = [
 			'Sunday',
 			'Monday',
-			'Twesday',
+			'Tuesday',
 			'Wednesday',
 			'Thursday',
 			'Friday',
@@ -299,7 +299,7 @@ module.exports = {
 							days: [
 								'Sunday',
 								'Monday',
-								'Twesday',
+								'Tuesday',
 								'Wednesday',
 								'Thursday',
 								'Friday',

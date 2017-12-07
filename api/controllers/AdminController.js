@@ -349,7 +349,7 @@ module.exports = {
 									'Section': section.id,
 									'Sunday': [],
 									'Monday': [],
-									'Twesday': [],
+									'Tuesday': [],
 									'Wednesday': [],
 									'Thursday': [],
 									'Friday': [],
@@ -358,7 +358,7 @@ module.exports = {
 								var days = [
 									'Sunday',
 									'Monday',
-									'Twesday',
+									'Tuesday',
 									'Wednesday',
 									'Thursday',
 									'Friday',
@@ -408,7 +408,7 @@ module.exports = {
 								days: [
 									'Sunday',
 									'Monday',
-									'Twesday',
+									'Tuesday',
 									'Wednesday',
 									'Thursday',
 									'Friday',
@@ -427,7 +427,7 @@ module.exports = {
 						days: [
 							'Sunday',
 							'Monday',
-							'Twesday',
+							'Tuesday',
 							'Wednesday',
 							'Thursday',
 							'Friday',
