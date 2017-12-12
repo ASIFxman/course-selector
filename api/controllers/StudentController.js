@@ -289,7 +289,7 @@ module.exports = {
 								});
 							}
 						}
-						// console.log(JSON.stringify(semesterData.routine[studentData.department][studentData.intake]));
+						console.log(JSON.stringify(semesterData.routine[studentData.department][studentData.intake]));
 						return res.view({
 							isAdmin: true,
 							availableSemester: true,
