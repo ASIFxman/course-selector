@@ -14,6 +14,10 @@ module.exports = {
     description: {
       type: 'text'
     },
+    courseTeacher: {
+      model: 'Admin',
+      via: 'course'
+    },
     department: {
       model: 'Department',
       via: 'course'

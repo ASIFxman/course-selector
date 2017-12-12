@@ -10,6 +10,9 @@ var bcrypt = require('bcryptjs');
 module.exports = {
 
   attributes: {
+    name: {
+      type: 'string'
+    },
     username: {
       type: 'string',
       unique: true
@@ -20,6 +23,10 @@ module.exports = {
     userType: {
       type: 'string',
       enum: ['admin','teacher']
+    },
+    course: {
+      model: 'Course',
+      via: 'courseTeacher'
     }
   },
   beforeCreate: function (values, cb) {

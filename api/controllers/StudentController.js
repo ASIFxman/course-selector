@@ -13,7 +13,7 @@ const MomentRange = require('moment-range');
 const moment = MomentRange.extendMoment(Moment);
 
 const options = {
-	finalSemester: 12,
+	finalSemester: 3,
 	maxCreditPerSemester: 21
 }
 

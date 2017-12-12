@@ -52,6 +52,7 @@ module.exports = {
 				// console.log(req.param('preCourse'));
 				var dataToCreate = {
 					name: req.param('name'),
+					courseTeacher: req.param('courseTeacher'),
 					description: req.param('description'),
 					department: req.param('department'),
 					preCourse: typeof req.param('preCourse') != 'undefined' ? checkAddArray(req.param('preCourse')) : null,
@@ -68,12 +69,17 @@ module.exports = {
 						if (err) {
 							return res.serverError(err);
 						}
-						return res.view({
-							isAdmin: true,
-							department: response,
-							notification: true,
-							notificationHeader: 'Success',
-							notificationBody: 'Successfully Created Course'
+						Admin.find({
+							userType: 'teacher'
+						}).exec(function (err, teacher) {
+							return res.view({
+								isAdmin: true,
+								department: response,
+								notification: true,
+								notificationHeader: 'Success',
+								notificationBody: 'Successfully Created Course',
+								teacher: teacher
+							});
 						});
 					});
 				});
@@ -93,12 +99,17 @@ module.exports = {
 							if (err) {
 								return res.serverError(err);
 							}
-							return res.view({
-								isAdmin: true,
-								department: response,
-								notification: true,
-								notificationHeader: 'Success',
-								notificationBody: 'Successfully Deleted Course'
+							Admin.find({
+								userType: 'teacher'
+							}).exec(function (err, teacher) {
+								return res.view({
+									isAdmin: true,
+									department: response,
+									notification: true,
+									notificationHeader: 'Success',
+									notificationBody: 'Successfully Deleted Course',
+									teacher: teacher
+								});
 							});
 						});
 					});
@@ -123,12 +134,17 @@ module.exports = {
 							if (err) {
 								return res.serverError(err);
 							}
-							return res.view({
-								isAdmin: true,
-								department: response,
-								notification: true,
-								notificationHeader: 'Success',
-								notificationBody: 'Successfully Edited Course'
+							Admin.find({
+								userType: 'teacher'
+							}).exec(function (err, teacher) {
+								return res.view({
+									isAdmin: true,
+									department: response,
+									notification: true,
+									notificationHeader: 'Success',
+									notificationBody: 'Successfully Edited Course',
+									teacher: teacher
+								});
 							});
 						});
 					});
@@ -140,9 +156,14 @@ module.exports = {
 					if (err) {
 						return res.serverError(err);
 					}
-					return res.view({
-						isAdmin: true,
-						department: response
+					Admin.find({
+						userType: 'teacher'
+					}).exec(function (err, teacher) {
+						return res.view({
+							isAdmin: true,
+							department: response,
+							teacher: teacher
+						});
 					});
 				});
 			}
@@ -502,6 +523,7 @@ module.exports = {
 	createUser: function (req, res, next) {
 		if (typeof req.param("create") != 'undefined') {
 			var dataToCreate = {
+				name: req.param('name'),
 				username: req.param('username'),
 				password: req.param('password'),
 				userType: req.param('userType')
