@@ -66,8 +66,16 @@ function checkIfValidRoutine(courses, department, intake, sectionId, callback) {
 		if (err) {
 			return callback(err, 'Server Error', 'Try again or contact admin');
 		}
-		var thisRoutineContainter = thisSemester.routine[department][intake];
+
+		// console.log(thisSemester.routine[department]);
+
+		// var thisRoutineContainter = thisSemester.routine[department][intake];
+		var thisRoutineContainter = thisSemester.routine[department];
 		var thisRoutine = {};
+
+		_.each(thisRoutineContainter, function (eachRoutine) {
+			console.log(eachRoutine);
+		});
 
 		for (var i = 0; i < thisRoutineContainter.length; i++) {
 			if (parseInt(thisRoutineContainter[i]['Section']) === parseInt(sectionId)) {
@@ -289,13 +297,14 @@ module.exports = {
 								});
 							}
 						}
-						console.log(JSON.stringify(semesterData.routine[studentData.department][studentData.intake]));
+						// console.log(JSON.stringify(semesterData.routine[studentData.department]));
 						return res.view({
 							isAdmin: true,
 							availableSemester: true,
 							semesterName: semesterData.name,
 							semesterNumber: studentData.completedSemester.length,
-							routine: semesterData.routine[studentData.department][studentData.intake],
+							// routine: semesterData.routine[studentData.department][studentData.intake],
+							routine: semesterData.routine[studentData.department], //TODO: fix all loops
 							days: [
 								'Sunday',
 								'Monday',
@@ -314,7 +323,7 @@ module.exports = {
 	pending: function (req, res, next) {
 		// console.log(req.allParams());
 		if (typeof req.param('section') != 'undefined') {
-			console.log('HERE');
+			// console.log('HERE');
 			var dataObjectArray = {};
 			var sections = req.param('section');
 
@@ -337,7 +346,10 @@ module.exports = {
 						return res.serverError(err)
 					}
 					Request.find({
-						student: req.session.student.id
+						where: {
+							student: req.session.student.id
+						},
+						sort: 'createdAt DESC'
 					})
 					.populate('semester')
 					.exec(function (err, requests) {
@@ -357,7 +369,10 @@ module.exports = {
 
 		} else {
 			Request.find({
-				student: req.session.student.id
+				where: {
+					student: req.session.student.id
+				},
+				sort: 'createdAt DESC'
 			})
 			.populate('semester')
 			.exec(function (err, requests) {
@@ -383,6 +398,7 @@ module.exports = {
 			}
 		}
 		Course.find(searchParam)
+		.populate('courseTeacher')
 		.exec(function (err, response) {
 			if (typeof req.param('studentId') != 'undefined') {
 				Student.findOne(req.param('studentId'))
@@ -432,12 +448,23 @@ module.exports = {
 		var dataObjectArray = {};
 		var sections = req.param('section');
 		var isEmpty = true;
-
+		var combinedSections = [];
+		var isCommon = false;
 
 		for (var i = 0; i < sections.length; i++) {
 			if (typeof req.param('courses' + sections[i]) !== 'undefined') {
 				dataObjectArray[sections[i]] = Array.isArray(req.param('courses' + sections[i])) ? req.param('courses' + sections[i]) : [req.param('courses' + sections[i])];
 				isEmpty = false;
+			}
+		}
+
+		combinedSections = combination(sections);
+		// console.log(sections);
+		// console.log(combinedSections);
+
+		for (var i = 0; i < combinedSections.length; i++) {
+			if (_.intersection(dataObjectArray[combinedSections[i][1]], dataObjectArray[combinedSections[i][0]]).length !== 0) {
+				isCommon = true;
 			}
 		}
 
@@ -448,6 +475,15 @@ module.exports = {
 				errorText: 'No Subjects Selected'
 			});
 		}
+
+		if (isCommon) {
+			return res.json({
+				status: 'error',
+				errorHead: 'Subject Common',
+				errorText: 'Please Do Not Choose Same Subject in Different Sections'
+			});
+		}
+
 		var coursesSelected = [];
 
 		// console.log(dataObjectArray);

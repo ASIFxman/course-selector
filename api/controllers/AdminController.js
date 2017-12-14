@@ -368,6 +368,8 @@ module.exports = {
 								var nameToSelect = 'department' + department.id + 'Intake' + intake.id + 'Section' + section.id + 'Routine';
 								eachRoutine = {
 									'Section': section.id,
+									'SectionName': section.name,
+									'IntakeName': intake.name,
 									'Sunday': [],
 									'Monday': [],
 									'Tuesday': [],
@@ -555,16 +557,29 @@ module.exports = {
 			if (err) {
 				return res.serverError(err)
 			}
-
-			for (var i = 0; i < requests.length; i++) {
-				if (!requests[i].semester.current) {
-					delete requests[i];
-				}
+			// console.log(JSON.stringify(requests));
+			if (requests.length === 0) {
+				return res.view({
+					isAdmin: true,
+					requests: []
+				});
+			} else {
+				NestedPopulateService.populateDeep('request', requests, 'student.intake', function (err, dataToSend) {
+					if (err) {
+						return res.serverError(err)
+					}
+					for (var i = 0; i < dataToSend.length; i++) {
+						if (!dataToSend[i].semester.current) {
+							delete dataToSend[i];
+						}
+					}
+					// console.log(JSON.stringify(dataToSend));
+					return res.view({
+						isAdmin: true,
+						requests: dataToSend
+					});
+				});
 			}
-			return res.view({
-				isAdmin: true,
-				requests: requests
-			});
 		});
 	},
 	getDepartments: function (req, res, next) {
@@ -837,4 +852,23 @@ module.exports = {
 
 		return res.redirect('/admin/login');
 	},
+	getSectionDetails: function (req, res, next) {
+		var sectionId = req.param('sectionId');
+
+		Section.findOne(sectionId)
+		.populate('intake')
+		.exec(function (err, section) {
+			if (err) {
+				return res.json({
+					status: 'error'
+				});
+			}
+
+			return res.json({
+				status: 'success',
+				sectionName: section.name,
+				intakeName: section.intake.name
+			});
+		});
+	}
 };
