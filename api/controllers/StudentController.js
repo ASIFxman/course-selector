@@ -97,7 +97,7 @@ function checkIfValidRoutine(courses, department, intake, sectionId, callback) {
 			});
 		});
 
-		// console.log(JSON.stringify(thisRoutineContainter));
+		console.log(JSON.stringify(thisRoutineContainter));
 
 		for (var i = 0; i < thisRoutineContainter.length; i++) {
 			if (parseInt(thisRoutineContainter[i]['Section']) === parseInt(sectionId)) {
