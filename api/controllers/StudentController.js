@@ -14,7 +14,7 @@ const moment = MomentRange.extendMoment(Moment);
 
 const options = {
 	finalSemester: 3,
-	maxCreditPerSemester: 21
+	maxCreditPerSemester: 13
 }
 
 function checkMaxCredit(courses, callback) {
@@ -25,6 +25,7 @@ function checkMaxCredit(courses, callback) {
 			return callback(err, 'Server Error', 'Try again or contact admin');
 		}
 		var sum = _.reduce(response, function(memo, eachCourse) { return memo + parseFloat(eachCourse.credit); }, 0);
+		// console.log("SUM");
 		// console.log(sum);
 		if (sum >= options.maxCreditPerSemester) {
 			// console.log('Max Credit Reached');
@@ -43,6 +44,12 @@ function checkIfValidPrecourse(course, student, callback) {
 		}
 		var studentCourses = studentData.course;
 
+		var studentCourseIdArray = [];
+		for (var i = 0; i < studentCourses.length; i++) {
+			studentCourseIdArray.push(parseInt(studentCourses[i].id));
+		}
+
+
 		Course.findOne(course)
 		.populate('preCourse')
 		.exec(function (err, courseData) {
@@ -50,11 +57,19 @@ function checkIfValidPrecourse(course, student, callback) {
 				return callback(err, 'Server Error', 'Try again or contact admin');
 			}
 			var preCourses = courseData.preCourse;
-			var unCompletedPreCourse = _.difference(preCourses, studentCourses);
+			var preCoursesIdArray = [];
+			for (var i = 0; i < preCourses.length; i++) {
+				preCoursesIdArray.push(parseInt(preCourses[i].id));
+			}
+			// console.log(studentCourseIdArray);
+			// console.log(preCoursesIdArray);
+
+			var unCompletedPreCourse = _.difference(preCoursesIdArray, studentCourseIdArray);
+			// console.log(unCompletedPreCourse);
 			if (unCompletedPreCourse.length === 0) {
 				return callback(null);
 			} else {
-				return callback(true, 'Pre Course', 'Incomplete Pre Course: ' + unCompletedPreCourse[0].name);
+				return callback(true, 'Pre Course', 'Incomplete Pre Course: ' + _.find(preCourses, function(num) { return num.id == unCompletedPreCourse; }).name);
 			}
 		});
 	});
@@ -70,18 +85,27 @@ function checkIfValidRoutine(courses, department, intake, sectionId, callback) {
 		// console.log(thisSemester.routine[department]);
 
 		// var thisRoutineContainter = thisSemester.routine[department][intake];
-		var thisRoutineContainter = thisSemester.routine[department];
+		// var thisRoutineContainter = thisSemester.routine[department];
+		var thisRoutineContainterContainer = thisSemester.routine[department];
+		var thisRoutineContainter = [];
+
 		var thisRoutine = {};
 
-		_.each(thisRoutineContainter, function (eachRoutine) {
-			console.log(eachRoutine);
+		_.each(thisRoutineContainterContainer, function (eachRoutine) {
+			_.each(eachRoutine, function (eachEachRoutine) {
+				thisRoutineContainter.push(eachEachRoutine);
+			});
 		});
+
+		// console.log(JSON.stringify(thisRoutineContainter));
 
 		for (var i = 0; i < thisRoutineContainter.length; i++) {
 			if (parseInt(thisRoutineContainter[i]['Section']) === parseInt(sectionId)) {
 				thisRoutine = [thisRoutineContainter[i]];
 			}
 		}
+
+		// console.log(thisRoutine);
 
 		var days = [
 			'Sunday',
@@ -95,11 +119,11 @@ function checkIfValidRoutine(courses, department, intake, sectionId, callback) {
 		// console.log("thisRoutine");
 		// console.log(thisRoutine);
 		async.each(thisRoutine, function (section, cllbk) {
-			// console.log("section");
-			// console.log(section);
+			console.log("section");
+			console.log(section);
 			var noOverlaps = true;
 			_.each(days, function (dayName) {
-				var thisDay = []
+				var thisDay = [];
 				_.each(section[dayName][0], function (day) {
 					var contains = false;
 					for (var i = 0; i < courses.length; i++) {
@@ -110,7 +134,7 @@ function checkIfValidRoutine(courses, department, intake, sectionId, callback) {
 
 					if (contains) {
 						var rangeToPush = moment.range(moment(day.start,'h : m A'), moment(day.end,'h : m A'));
-						thisDay.push(rangeToPush)
+						thisDay.push(rangeToPush);
 					}
 
 				});
