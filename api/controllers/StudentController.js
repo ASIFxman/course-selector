@@ -163,6 +163,70 @@ function checkIfValidRoutine(courses, department, intake, sectionId, callback) {
 	});
 }
 
+function checkIfValidRoutineMulti(comparisonArray, callbackback) {
+	// console.log(comparisonArray);
+	var sectionA = comparisonArray[0].substring(0, comparisonArray[0].indexOf(','));
+	var sectionB = comparisonArray[1].substring(0, comparisonArray[1].indexOf(','));
+	var courseA = comparisonArray[0].replace(sectionA + ',', '');
+	var courseB = comparisonArray[1].replace(sectionB + ',', '');
+
+	// console.log(sectionA);
+	// console.log(courseA);
+	// console.log(sectionB);
+	// console.log(courseB);
+
+	Semester.findOne({
+		current: true
+	}).exec(function (err, semester) {
+		if (err) {
+			return callbackback(err);
+		}
+		// console.log(JSON.stringify(semester));
+		var sectionData = []
+		_.each(semester.routine, function (department) {
+			_.each(department, function (intake) {
+				_.each(intake, function (eachSection) {
+					sectionData.push(eachSection);
+				});
+			});
+		});
+		// console.log(JSON.stringify(sectionData));
+		var days = [
+			'Sunday',
+			'Monday',
+			'Tuesday',
+			'Wednesday',
+			'Thursday',
+			'Friday',
+			'Saturday'
+		];
+
+		_.each(sectionData, function (eachSectionData) {
+			if (eachSectionData['Section'] == sectionA) {
+				_.each(days, function (day) {
+					_.each(eachSectionData[day][0], function (course) {
+						if (course.courseId == courseA) {
+							console.log(day);
+							console.log(course);
+						}
+					});
+				});
+			} else if (eachSectionData['Section'] == sectionB) {
+				_.each(days, function (day) {
+					_.each(eachSectionData[day][0], function (course) {
+						if (course.courseId == courseB) {
+							console.log(day);
+							console.log(course);
+						}
+					});
+				});
+			}
+		});
+		console.log('--');
+		return callbackback(null);
+	});
+}
+
 function combination (arr) {
 
   let i, j, temp
@@ -673,8 +737,51 @@ module.exports = {
 									errorText: 'Please choose subjects accourding to Routine'
 								});
 							} else {
-								return res.json({
-									status: 'success'
+								var mainRoutineAnalysisArray = [];
+								// console.log(JSON.stringify(dataObjectArray));
+								_.each(dataObjectArray, function (eachData, key) {
+									// console.log(key);
+									// console.log(eachData);
+									_.each(eachData, function (finalData) {
+										mainRoutineAnalysisArray.push(key + ',' + finalData);
+									});
+								});
+								// console.log(mainRoutineAnalysisArray);
+								// console.log(combination(mainRoutineAnalysisArray))
+								var combinedRoutineAnalysis = combination(mainRoutineAnalysisArray);
+
+								var processedCombinedRoutineAnalysis = [];
+
+								_.each(combinedRoutineAnalysis, function (eachRoutine) {
+									if (eachRoutine[0].substring(0, eachRoutine[0].indexOf(',')) !== eachRoutine[1].substring(0, eachRoutine[1].indexOf(','))) {
+										processedCombinedRoutineAnalysis.push(eachRoutine);
+									}
+								});
+
+								// console.log(processedCombinedRoutineAnalysis);
+								async.each(processedCombinedRoutineAnalysis, function (eachCombination, clabke) {
+									checkIfValidRoutineMulti(eachCombination, function (err) {
+										if (err) {
+											return clabke(err);
+										}
+										return clabke(null);
+									})
+								}, function (err) {
+									if (err) {
+										return res.json({
+											status: 'error',
+											errorHead: 'Routine Overlap',
+											errorText: 'Please choose subjects accourding to Routine'
+										});
+									}
+									return res.json({
+										status: 'error',
+										errorHead: 'Test',
+										errorText: 'Test Error'
+									});
+									return res.json({
+										status: 'success'
+									});
 								});
 							}
 						});
