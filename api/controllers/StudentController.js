@@ -97,7 +97,7 @@ function checkIfValidRoutine(courses, department, intake, sectionId, callback) {
 			});
 		});
 
-		console.log(JSON.stringify(thisRoutineContainter));
+		// console.log(JSON.stringify(thisRoutineContainter));
 
 		for (var i = 0; i < thisRoutineContainter.length; i++) {
 			if (parseInt(thisRoutineContainter[i]['Section']) === parseInt(sectionId)) {
@@ -119,8 +119,8 @@ function checkIfValidRoutine(courses, department, intake, sectionId, callback) {
 		// console.log("thisRoutine");
 		// console.log(thisRoutine);
 		async.each(thisRoutine, function (section, cllbk) {
-			console.log("section");
-			console.log(section);
+			// console.log("section");
+			// console.log(section);
 			var noOverlaps = true;
 			_.each(days, function (dayName) {
 				var thisDay = [];
@@ -322,22 +322,72 @@ module.exports = {
 							}
 						}
 						// console.log(JSON.stringify(semesterData.routine[studentData.department]));
+						var days = [
+							'Sunday',
+							'Monday',
+							'Tuesday',
+							'Wednesday',
+							'Thursday',
+							'Friday',
+							'Saturday'
+						];
+						var routineDetailsForCourse = semesterData.routine[studentData.department];
+
+						var sectionsArrayForCourse = [];
+
+						_.each(routineDetailsForCourse, function (sectionsForCourse) {
+							// console.log(JSON.stringify(sectionsForCourse));
+							for (var i = 0; i < sectionsForCourse.length; i++) {
+								sectionsArrayForCourse.push(sectionsForCourse[i]);
+							}
+						});
+						// console.log("GB");
+						// console.log(JSON.stringify(sectionsArrayForCourse));
+
+						var sectionCoursesOffered = {};
+						// var courses = {
+	            //	"sectionId": [
+              	//	"courseId"
+							// ]
+						// }
+
+						for (var i = 0; i < sectionsArrayForCourse.length; i++) {
+							var sectionIdForCourse = sectionsArrayForCourse[i]['Section'];
+							_.each(days,function (day) {
+								if (sectionsArrayForCourse[i][day][0].length > 0) {
+									if (typeof sectionCoursesOffered[sectionIdForCourse] == 'undefined') {
+										sectionCoursesOffered[sectionIdForCourse] = [];
+										for (var j = 0; j < sectionsArrayForCourse[i][day][0].length; j++) {
+											sectionCoursesOffered[sectionIdForCourse].push(sectionsArrayForCourse[i][day][0][j].courseId);
+										}
+									} else {
+										for (var j = 0; j < sectionsArrayForCourse[i][day][0].length; j++) {
+											sectionCoursesOffered[sectionIdForCourse].push(sectionsArrayForCourse[i][day][0][j].courseId);
+										}
+									}
+								}
+							});
+							sectionCoursesOffered[sectionIdForCourse] = _.uniq(sectionCoursesOffered[sectionIdForCourse]);
+						}
+						// for (var i = 0; i < sectionsArrayForCourse.length; i++) {
+						// 	var sectionIdForCourse = sectionsArrayForCourse[i]['Section'];
+						// 	_.each(days,function (day) {
+						// 		for (var i = 0; i < sectionsArrayForCourse[i][day][0].length; i++) {
+						// 			sectionCoursesOffered[sectionIdForCourse].push(sectionsArrayForCourse[i][day][0][i].courseId);
+						// 		}
+						// 	});
+						// }
+
+						// console.log(sectionCoursesOffered);
+
 						return res.view({
 							isAdmin: true,
 							availableSemester: true,
 							semesterName: semesterData.name,
 							semesterNumber: studentData.completedSemester.length,
-							// routine: semesterData.routine[studentData.department][studentData.intake],
-							routine: semesterData.routine[studentData.department], //TODO: fix all loops
-							days: [
-								'Sunday',
-								'Monday',
-								'Tuesday',
-								'Wednesday',
-								'Thursday',
-								'Friday',
-								'Saturday'
-							]
+							routine: semesterData.routine[studentData.department],
+							sectionCoursesOffered: sectionCoursesOffered,
+							days: days
 						});
 					})
 				});
@@ -467,10 +517,47 @@ module.exports = {
 			}
 		})
 	},
+	getCourseNameOption: function (req, res, next) {
+		var courseId = req.param('courseId');
+
+		Course.findOne(courseId).exec(function (err, course) {
+			if (err) {
+				return res.json({
+					status: 'error'
+				});
+			}
+			var courseName = course.name;
+			var courseCredit = course.credit;
+			var courseStatus = '';
+
+			Student.findOne({
+				id: req.session.student.id
+			})
+			.populate('course')
+			.exec(function (err, student) {
+				if (err) {
+					return res.json({
+						status: 'error'
+					});
+				}
+				// console.log(student.course);
+				for (var i = 0; i < student.course.length; i++) {
+					if (student.course[i].id == courseId) {
+						// console.log("HERE");
+						courseStatus = ' - Completed';
+					}
+				}
+				return res.json({
+					status: 'success',
+					courseDetails: courseName + ' (Credit: ' + courseCredit + ')' + courseStatus
+				});
+			});
+		});
+	},
 	checkRegistration: function (req, res, next) {
 		// console.log(req.allParams());
 		var dataObjectArray = {};
-		var sections = req.param('section');
+		var sections = req.param('section'); // [2,3,4,5]
 		var isEmpty = true;
 		var combinedSections = [];
 		var isCommon = false;
@@ -481,6 +568,11 @@ module.exports = {
 				isEmpty = false;
 			}
 		}
+
+		// console.log("---");
+		// console.log("DATAOBJECTARRAY");
+		// console.log("---");
+		// console.log(JSON.stringify(dataObjectArray));
 
 		combinedSections = combination(sections);
 		// console.log(sections);

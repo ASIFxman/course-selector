@@ -37,7 +37,7 @@
                     <div class="col-xs-12">
                         <div class="white-box analytics-info">
                           <% if(typeof request != 'undefined') { %>
-                            <h3 class="box-title"><%= request.student.firstName %> <%= request.student.lastName %> (<span class="getDepartmentName"><%= request.student.department %></span> - <%= request.student.intake.name %> Intake) (ID: <%= request.student.studentID %>)</h3>
+                            <h3 class="box-title"><%= request.student.firstName %> <%= request.student.lastName %> (<span class="getDepartmentName"><%= request.student.department %></span>) (ID: <%= request.student.studentID %>)</h3>
                             <% _.each(request.details, function (course, key) { %>
                               <h4><b class="getSectionDetails"><%= key %></b></h4>
                               <% _.each(course, function (eachCourse) { %>

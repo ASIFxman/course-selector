@@ -245,6 +245,7 @@ $(document).ready(function () {
 
       $(".deleteRoutineRow").click(function (event) {
         event.preventDefault();
+        rowNumberSelector.val(parseInt(rowNumberSelector.val()) - 1);
         $(this).parent().parent().remove();
       });
       }

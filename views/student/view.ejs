@@ -44,8 +44,13 @@
                                 <% _.each(intake, function (section) { %>
                                   <div class="form-group">
                                     <label>Intake <%= section['IntakeName'] %>, Section <%= section['SectionName'] %></label>
+                                    <!-- <select class="form-control form-control-line selectCoursesForRegistration" name="courses<%= section['Section'] %>" multiple> -->
                                     <select class="form-control form-control-line selectCoursesForRegistration" name="courses<%= section['Section'] %>" multiple>
-
+                                      <% if (typeof sectionCoursesOffered[section['Section']] != 'undefined') { %>
+                                        <% for (var i = 0; i < sectionCoursesOffered[section['Section']].length; i++) { %>
+                                          <option class="getCourseNameOption" value="<%= sectionCoursesOffered[section['Section']][i] %>"><%= sectionCoursesOffered[section['Section']][i] %></option>
+                                        <% } %>
+                                      <% } %>
                                     </select>
                                   </div>
                                   <input type="hidden" name="section" value="<%= section['Section'] %>">
@@ -113,6 +118,16 @@
 
     <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
+      $(".getCourseNameOption").map(function () {
+      	var _this = $(this);
+        $.get('/student/getCourseNameOption', {
+          courseId: _this.html()
+        }, function (data) {
+          if (data.status === 'success') {
+            _this.html(data.courseDetails);
+          }
+        });
+      });
       $(".getCourseName").map(function () {
       	var _this = $(this);
         $.get('/student/getCourseName', {
@@ -129,27 +144,27 @@
           courseId: _this.html()
         }, function (data) {
           if (data.status === 'success') {
-            console.log(data.courses[0]);
+            // console.log(data.courses[0]);
             _this.html(data.courses[0].courseTeacher.username);
           }
         });
       });
-      $.get('/student/getCourseName', {
-        departmentId: <%= req.session.student.department %>,
-        studentID: <%= req.session.student.id %>
-      }, function (data) {
-        if (data.status === 'success') {
-          var dataToWrite = "";
-          if (typeof data.completed != 'undefined') {
-            for (var i = 0; i < data.completed.length; i++) {
-              dataToWrite += '<option disabled>' + data.completed[i].name + ' (Completed)</option>';
-            }
-          }
-          for (var i = 0; i < data.courses.length; i++) {
-            dataToWrite += '<option value="' + data.courses[i].id + '">' + data.courses[i].name + ' (Credit: ' + data.courses[i].credit + ')' + '</option>';
-          }
-          $(".selectCoursesForRegistration").html(dataToWrite);
-        }
-      });
+      // $.get('/student/getCourseName', {
+      //   departmentId: <%= req.session.student.department %>,
+      //   studentID: <%= req.session.student.id %>
+      // }, function (data) {
+      //   if (data.status === 'success') {
+      //     var dataToWrite = "";
+      //     if (typeof data.completed != 'undefined') {
+      //       for (var i = 0; i < data.completed.length; i++) {
+      //         dataToWrite += '<option disabled>' + data.completed[i].name + ' (Completed)</option>';
+      //       }
+      //     }
+      //     for (var i = 0; i < data.courses.length; i++) {
+      //       dataToWrite += '<option value="' + data.courses[i].id + '">' + data.courses[i].name + ' (Credit: ' + data.courses[i].credit + ')' + '</option>';
+      //     }
+      //     $(".selectCoursesForRegistration").html(dataToWrite);
+      //   }
+      // });
     });
     </script>
