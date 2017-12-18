@@ -201,13 +201,20 @@ function checkIfValidRoutineMulti(comparisonArray, callbackback) {
 			'Saturday'
 		];
 
+		var courseDayTimes = [];
+		// var courseBDayTimes = [];
+
 		_.each(sectionData, function (eachSectionData) {
 			if (eachSectionData['Section'] == sectionA) {
 				_.each(days, function (day) {
 					_.each(eachSectionData[day][0], function (course) {
 						if (course.courseId == courseA) {
-							console.log(day);
-							console.log(course);
+							courseDayTimes.push({
+								day: day,
+								courseId: course.courseId,
+								start: course.start,
+								end: course.end
+							});
 						}
 					});
 				});
@@ -215,14 +222,39 @@ function checkIfValidRoutineMulti(comparisonArray, callbackback) {
 				_.each(days, function (day) {
 					_.each(eachSectionData[day][0], function (course) {
 						if (course.courseId == courseB) {
-							console.log(day);
-							console.log(course);
+							courseDayTimes.push({
+								day: day,
+								courseId: course.courseId,
+								start: course.start,
+								end: course.end
+							});
 						}
 					});
 				});
 			}
 		});
-		console.log('--');
+		var combinedDayTimes = combination(courseDayTimes);
+
+		var processedCombinedDayTimes = [];
+
+		for (var i = 0; i < combinedDayTimes.length; i++) {
+			if (combinedDayTimes[i][0].day === combinedDayTimes[i][1].day && combinedDayTimes[i][0].courseId !== combinedDayTimes[i][1].courseId) {
+				processedCombinedDayTimes.push(combinedDayTimes[i]);
+			}
+		}
+
+		// console.log(processedCombinedDayTimes);
+
+		for (var i = 0; i < processedCombinedDayTimes.length; i++) {
+			var rangeA = moment.range(moment(processedCombinedDayTimes[i][0].start,'h : m A'), moment(processedCombinedDayTimes[i][0].end,'h : m A'));
+			var rangeB = moment.range(moment(processedCombinedDayTimes[i][1].start,'h : m A'), moment(processedCombinedDayTimes[i][1].end,'h : m A'));
+
+			if (rangeA.overlaps(rangeB, { adjacent: false })) {
+				return callbackback(true);
+			}
+		}
+
+		// console.log('--');
 		return callbackback(null);
 	});
 }
@@ -774,11 +806,6 @@ module.exports = {
 											errorText: 'Please choose subjects accourding to Routine'
 										});
 									}
-									return res.json({
-										status: 'error',
-										errorHead: 'Test',
-										errorText: 'Test Error'
-									});
 									return res.json({
 										status: 'success'
 									});
